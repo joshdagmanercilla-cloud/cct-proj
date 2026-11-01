@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cauayan City Career Connect</title>
+<style>
+:root{--green:#087f5b;--green2:#15966d;--navy:#123354;--ink:#1e2e42;--muted:#63758b;--line:#dce8ed;--pale:#f2f8f6;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#f8fbfc}
+button,input,select,textarea{font:inherit}button,a{cursor:pointer}a{text-decoration:none;color:inherit}.wrap{max-width:1180px;margin:auto;padding:0 24px}
+header{height:78px;background:#fff;border-bottom:1px solid #e8eff1;position:sticky;top:0;z-index:20}.nav{height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:10px;min-width:230px}.logo{width:48px;height:48px;border-radius:50% 50% 45% 45%;display:grid;place-items:center;background:linear-gradient(145deg,#dff6e9,#087f5b);color:#fff;font-size:26px}.brand strong{display:block;font-size:19px;color:var(--navy);line-height:1.15}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.navlinks{display:flex;gap:27px;align-items:center;font-size:14px;font-weight:650}.navlinks a:hover,.navlinks a.active{color:var(--green)}.navactions{display:flex;gap:9px}.btn{border:1px solid transparent;border-radius:9px;padding:11px 17px;font-weight:750;font-size:13px;transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn-primary{background:var(--green);color:white}.btn-primary:hover{background:#06694c;transform:translateY(-1px)}.btn-outline{border-color:#a9cfc0;color:var(--green);background:#fff}.btn-outline:hover{background:#effaf4}.btn-soft{background:#e8f5ef;color:var(--green)}.mobile-menu{display:none;background:white;border:1px solid var(--line);border-radius:8px;padding:8px 11px}
+.hero{position:relative;overflow:hidden;color:white;background:linear-gradient(100deg,rgba(7,43,61,.87),rgba(7,71,69,.64)),radial-gradient(ellipse at 75% 20%,#a6c8d1 0,transparent 32%),linear-gradient(165deg,#7aa4b4 0%,#527e7e 40%,#2c6657 70%,#174e40 100%);min-height:330px}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(3,31,36,.45)),repeating-linear-gradient(170deg,transparent 0 42px,rgba(255,255,255,.035) 43px 44px);opacity:.85}
+.hero:after{content:"";position:absolute;bottom:-60px;left:-3%;right:-3%;height:170px;background:linear-gradient(175deg,transparent 0 12%,rgba(22,91,61,.68) 13% 30%,transparent 31%),linear-gradient(8deg,#154d3e 0 35%,transparent 36%),linear-gradient(175deg,transparent 0 25%,#3d7957 26% 50%,transparent 51%);opacity:.65}
+.hero-inner{position:relative;z-index:2;padding-top:36px;padding-bottom:28px}.location{font-size:13px;font-weight:650;display:flex;align-items:center;gap:7px;color:#eaf8f4}.hero h1{font-size:clamp(32px,4vw,48px);letter-spacing:-1.3px;line-height:1.08;margin:12px 0 12px;max-width:650px}.hero h1 span{color:#9ff0c5}.hero p{line-height:1.55;max-width:610px;margin:0 0 22px;color:#f2f8f8;font-size:15px}.hero-note{position:absolute;right:25px;top:50px;z-index:2;font-size:22px;line-height:1.2;font-weight:800;text-align:right;transform:rotate(4deg);color:#f7fff9;text-shadow:0 2px 8px #123b43}
+.searchbar{background:#fff;border:1px solid #e3ebed;border-radius:12px;padding:9px;display:grid;grid-template-columns:1.3fr 1fr .9fr auto;gap:8px;max-width:960px;box-shadow:0 14px 35px rgba(4,32,42,.18)}
+.searchfield{display:flex;align-items:center;gap:9px;border:1px solid #dce7eb;border-radius:8px;padding:0 12px;color:#547087;min-width:0}.searchfield input,.searchfield select{width:100%;min-width:0;border:0;outline:0;padding:10px 0;background:transparent;color:#33485e;font-size:13px}.searchbar .btn{padding:12px 21px}
+main{padding:24px 0 48px}.benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:0 0 30px}.benefit{display:flex;align-items:center;gap:12px;padding:4px 0}.benefit-icon{width:48px;height:48px;flex:0 0 48px;border-radius:14px;display:grid;place-items:center;color:white;font-size:22px;background:linear-gradient(145deg,#29a66d,#087f5b)}.benefit:nth-child(2) .benefit-icon{background:linear-gradient(145deg,#329ce2,#1764a5)}.benefit:nth-child(3) .benefit-icon{background:linear-gradient(145deg,#9274e9,#5942a9)}.benefit:nth-child(4) .benefit-icon{background:linear-gradient(145deg,#26b5ad,#07817b)}.benefit strong{font-size:14px;display:block;color:var(--navy);margin-bottom:4px}.benefit span{font-size:12px;color:var(--muted);line-height:1.45;display:block}
+.content-grid{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:22px;align-items:start}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px}.section-head h2{font-size:21px;letter-spacing:-.4px;color:var(--navy);margin:0}.section-head p{margin:5px 0 0;color:var(--muted);font-size:13px}.text-link{font-size:13px;font-weight:750;color:var(--green);white-space:nowrap}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px}.chip{border:1px solid #d9e7e4;background:white;border-radius:999px;padding:7px 12px;color:#516b7b;font-size:12px;font-weight:650}.chip.active,.chip:hover{background:#e6f6ed;color:var(--green);border-color:#a8d7bf}
+.jobs{display:flex;flex-direction:column;gap:10px}.job-card{background:white;border:1px solid var(--line);border-radius:13px;padding:17px;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;box-shadow:0 3px 12px rgba(23,54,71,.025);transition:.18s}.job-card:hover{border-color:#a7d6c0;box-shadow:0 8px 24px rgba(23,54,71,.07);transform:translateY(-1px)}.company-logo{width:50px;height:50px;border-radius:13px;display:grid;place-items:center;font-weight:900;font-size:19px;background:#e4f6e9;color:#16824d}.company-logo.blue{background:#e7f1ff;color:#2175c7}.company-logo.orange{background:#fff1dc;color:#d98716}.company-logo.pink{background:#ffebee;color:#dc4964}.company-logo.purple{background:#f0eaff;color:#7450bd}.job-main h3{font-size:15px;color:var(--navy);margin:0 0 4px}.company{font-size:12px;color:#4e6276;margin-bottom:8px}.job-meta{display:flex;gap:12px;flex-wrap:wrap;color:#687c91;font-size:11px}.job-meta span{display:flex;gap:4px;align-items:center}.job-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.tag{border-radius:999px;background:#e7f6ed;color:#14724e;padding:4px 9px;font-size:10px;font-weight:750}.tag.neutral{background:#eef3f7;color:#52687b}.job-action{display:flex;flex-direction:column;align-items:flex-end;gap:12px}.job-action .btn{padding:9px 13px}.posted{font-size:10px;color:#8593a3;white-space:nowrap}.side-stack{display:flex;flex-direction:column;gap:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px}.panel h3{margin:0 0 8px;color:var(--navy);font-size:15px}.panel p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}.login-form{display:flex;flex-direction:column;gap:9px;margin-top:13px}.field{width:100%;border:1px solid #d9e4ea;border-radius:8px;padding:11px 12px;outline:0;background:#fff;color:var(--ink);font-size:13px}.field:focus{border-color:#61b993;box-shadow:0 0 0 3px #e0f5e9}.small-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:var(--muted)}.small-row a{color:var(--green);font-weight:700}.login-form .btn{width:100%}.panel-foot{text-align:center;font-size:11px;color:var(--muted);margin-top:10px}.panel-foot a{color:var(--green);font-weight:750}.resident-panel{background:linear-gradient(135deg,#effaf5,#e2f5f1);border-color:#b9e3d1}.resident-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}.resident-icon{background:#13845f;color:white;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;font-size:20px;flex-shrink:0}.resident-panel h3{margin:0;font-size:14px}.quick-links{display:flex;flex-direction:column;gap:12px;margin-top:12px}.quick-links a{font-size:12px;color:#355f7b;display:flex;align-items:center;gap:8px}.quick-links a:hover{color:var(--green)}.location-panel{background:linear-gradient(145deg,#f0f7fa,#e6f3f1);overflow:hidden;position:relative;min-height:110px}.location-panel:after{content:"⌂  ♜  ⌂  ♜  ⌂";position:absolute;bottom:-4px;right:8px;font-size:31px;letter-spacing:3px;color:#a6c8c9;opacity:.7}.location-panel p{position:relative;z-index:1}
+.empty{padding:34px;text-align:center;border:1px dashed #cbded8;background:#fff;border-radius:13px;color:var(--muted)}.empty strong{display:block;color:var(--navy);margin-bottom:6px}
+footer{background:#123e3b;color:#e5f3ee;padding:22px 0}.footer-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.footer-brand strong{font-size:14px;display:block}.footer-brand span{font-size:11px;color:#b8d3ca}.footer-links{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;color:#d4e8e0}.footer-links a:hover{text-decoration:underline}.copyright{font-size:11px;color:#b8d3ca}
+.modal-backdrop{position:fixed;inset:0;background:rgba(9,29,43,.58);z-index:50;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.show{display:flex}.modal{background:#fff;width:min(520px,100%);max-height:90vh;overflow:auto;border-radius:16px;padding:25px;box-shadow:0 25px 70px rgba(0,0,0,.25);position:relative}.modal h2{margin:0 35px 7px 0;color:var(--navy);font-size:22px}.modal p{font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 18px}.close{position:absolute;right:15px;top:13px;border:0;background:#eef4f3;border-radius:50%;width:34px;height:34px;font-size:20px;color:#49616c}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-group{display:flex;flex-direction:column;gap:6px}.form-group.full{grid-column:1/-1}.form-group label{font-size:12px;font-weight:750;color:#42576a}.form-group .field{min-width:0}.form-note{background:#f0f8f4;border-radius:8px;padding:11px;font-size:11px;color:#386652;line-height:1.5}.toast{position:fixed;bottom:20px;right:20px;z-index:70;background:#123e3b;color:#fff;border-radius:10px;padding:13px 17px;box-shadow:0 8px 25px #0b2d2b33;display:none;max-width:calc(100% - 40px);font-size:13px}.toast.show{display:block;animation:fade .2s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:980px){.navlinks{gap:14px}.brand{min-width:0}.benefits{grid-template-columns:repeat(2,1fr)}.content-grid{grid-template-columns:minmax(0,1fr) 260px}.hero-note{display:none}.searchbar{grid-template-columns:1fr 1fr}.searchbar .btn{grid-column:1/-1}.job-card{grid-template-columns:46px minmax(0,1fr)}.job-action{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}.company-logo{width:44px;height:44px}}
+@media(max-width:720px){header{height:auto;min-height:70px}.nav{min-height:70px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}.brand strong{font-size:16px}.brand small{font-size:9px}.logo{width:42px;height:42px}.navlinks{display:none;order:3;width:100%;padding:12px 0 5px;flex-direction:column;align-items:flex-start;gap:15px}.navlinks.open{display:flex}.navactions{margin-left:auto}.navactions .btn{padding:9px 11px}.mobile-menu{display:block}.hero-inner{padding-top:29px}.hero h1{font-size:35px}.hero p{font-size:13px}.searchbar{grid-template-columns:1fr}.searchbar .btn{grid-column:auto}.benefits{gap:15px}.benefit{align-items:flex-start}.benefit-icon{width:40px;height:40px;flex-basis:40px;font-size:18px}.benefit strong{font-size:12px}.benefit span{font-size:11px}.content-grid{grid-template-columns:1fr}.side-stack{display:grid;grid-template-columns:1fr 1fr}.panel:first-child{grid-column:1/-1}.job-card{padding:13px;gap:10px}.job-main h3{font-size:13px}.job-meta{gap:7px}.job-action .btn{font-size:11px;padding:8px 10px}.posted{font-size:9px}.footer-inner{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}}
+@media(max-width:440px){.wrap{padding:0 15px}.navactions .btn-outline{display:none}.benefits{grid-template-columns:1fr 1fr}.side-stack{grid-template-columns:1fr}.panel:first-child{grid-column:auto}.job-card{grid-template-columns:38px minmax(0,1fr)}.company-logo{width:38px;height:38px;font-size:16px}.job-action{grid-column:1/-1;margin-left:48px}.section-head h2{font-size:18px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#home" aria-label="Cauayan City Career Connect home">
+      <div class="logo">🌱</div>
+      <div><strong>Marabulig 1<br><span style="color:#087f5b">Career Connect</span></strong><small>Local Talent · Local Opportunities · A Brighter Future</small></div>
+    </a>
+    <nav class="navlinks" id="navlinks">
+      <a class="active" href="#home">Home</a><a href="#jobs">Jobs</a><a href="#graduates">For Graduates</a><a href="#employers">For Employers</a><a href="#about">About</a>
+    </nav>
+    <div class="navactions"><button class="btn btn-outline" onclick="openModal('login')">Log In</button><button class="btn btn-primary" onclick="openModal('signup')">Sign Up</button><button class="mobile-menu" onclick="document.getElementById('navlinks').classList.toggle('open')" aria-label="Open menu">☰</button></div>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="wrap hero-inner">
+    <div class="location">📍 Cauayan City, Isabela</div>
+    <h1>Your Next Opportunity<br><span>Starts Here</span></h1>
+    <p>A dedicated job portal for fresh graduates and first-time job seekers from Cauayan City and nearby areas in Isabela.</p>
+    <form class="searchbar" id="searchForm">
+      <label class="searchfield"><span>⌕</span><input id="keyword" type="search" placeholder="Job title, keywords, or company" aria-label="Job title, keywords, or company"></label>
+      <label class="searchfield"><span>📍</span><select id="location" aria-label="Location"><option value="">All locations</option><option>Cauayan City, Isabela</option><option>Alicia, Isabela</option><option>Cabatuan, Isabela</option><option>Luna, Isabela</option><option>Naguilian, Isabela</option><option>San Mateo, Isabela</option><option>Reina Mercedes, Isabela</option><option>Remote</option></select></label>
+      <label class="searchfield"><span>▣</span><select id="category" aria-label="Job category"><option value="">All Categories</option><option>Administration</option><option>Information Technology</option><option>Customer Service</option><option>Agriculture</option><option>Hospitality</option><option>Manufacturing</option><option>Marketing</option></select></label>
+      <button class="btn btn-primary" type="submit">Search Jobs →</button>
+    </form>
+  </div>
+  <div class="hero-note">From Cauayan City<br>to a Brighter<br>Tomorrow ✦</div>
+</section>
+
+<main class="wrap">
+  <section class="benefits" id="graduates">
+    <div class="benefit"><div class="benefit-icon">🎓</div><div><strong>For Fresh Graduates</strong><span>Find your first job and<br>build your future.</span></div></div>
+    <div class="benefit" id="employers"><div class="benefit-icon">▣</div><div><strong>For Employers</strong><span>Post job openings and<br>find local talent.</span></div></div>
+    <div class="benefit"><div class="benefit-icon">✓</div><div><strong>Resident Verification</strong><span>Optional and secure<br>for eligible programs.</span></div></div>
+    <div class="benefit"><div class="benefit-icon">↗</div><div><strong>Local Opportunities</strong><span>Jobs in Cauayan City<br>and nearby areas.</span></div></div>
+  </section>
+
+  <div class="content-grid" id="jobs">
+    <section>
+      <div class="section-head"><div><h2>Featured Job Listings</h2><p id="resultCount">Explore entry-level opportunities near you.</p></div><a class="text-link" href="#jobs" id="clearFilters">Clear filters ↗</a></div>
+      <div class="filters" id="quickFilters">
+        <button class="chip active" data-filter="">All Jobs</button><button class="chip" data-filter="no_experience">No Experience</button><button class="chip" data-filter="entry_level">Entry Level</button><button class="chip" data-filter="internship">Internships & Trainee</button>
+      </div>
+      <div class="jobs" id="jobList"></div>
+    </section>
+    <aside class="side-stack">
+      <section class="panel">
+        <h3>Welcome Back!</h3><p>Log in to your account to manage your profile, applications, and more.</p>
+        <form class="login-form" id="loginForm">
+          <input class="field" type="text" id="loginEmail" placeholder="Email or Phone Number" required aria-label="Email or phone number">
+          <input class="field" type="password" id="loginPassword" placeholder="Password" required aria-label="Password">
+          <div class="small-row"><label><input type="checkbox"> Keep me signed in</label><a href="#" onclick="event.preventDefault();openModal('forgot')">Forgot password?</a></div>
+          <button class="btn btn-primary" type="submit">Log In</button>
+        </form>
+        <div class="panel-foot">Don't have an account? <a href="#" onclick="event.preventDefault();openModal('signup')">Sign Up</a></div>
+      </section>
+      <section class="panel resident-panel">
+        <div class="resident-top"><div class="resident-icon">✓</div><h3>Are You a Cauayan City Resident?</h3></div>
+        <p>Cauayan City residents can request residency verification securely for eligible programs, with their consent and private information protected.</p>
+        <a class="text-link" href="#" onclick="event.preventDefault();openModal('resident')" style="display:inline-block;margin-top:9px">Learn More →</a>
+      </section>
+      <section class="panel">
+        <h3>Quick Links</h3><div class="quick-links">
+          <a href="#graduates">✎ Career Guidance & Resources</a><a href="#about">♙ Local Community Information</a><a href="mailto:careers@example.org">☎ Contact Us</a>
+        </div>
+      </section>
+      <section class="panel location-panel" id="about">
+        <h3>Cauayan City, Isabela</h3><p>Connecting local talent with nearby opportunities.</p>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-brand"><strong>Cauayan City Career Connect</strong><span>Local Talent · Local Opportunities · A Brighter Future</span></div>
+    <div class="footer-links"><a href="#" onclick="event.preventDefault();showToast('Privacy policy page can be connected in the production build.')">Privacy Policy</a><a href="#" onclick="event.preventDefault();showToast('Terms of service page can be connected in the production build.')">Terms of Service</a><a href="mailto:careers@example.org">Help & Contact</a></div>
+    <div class="copyright">© <span id="year"></span> Cauayan City Career Connect</div>
+  </div>
+</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="close" onclick="closeModal()" aria-label="Close dialog">×</button>
+    <h2 id="modalTitle">Create your account</h2><p id="modalDesc">Start exploring first-job opportunities around Cauayan City.</p>
+    <div id="modalBody"></div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const jobs = [
+ {id:1,initial:"A",logo:"",company:"Cauayan Agro-Tech Corporation",title:"Agricultural Assistant (Trainee)",category:"Agriculture",location:"Cauayan City, Isabela",arrangement:"On-site",type:"Trainee",level:"internship",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Assist the team with daily agricultural operations, record keeping, and basic field coordination. Training is provided for qualified applicants.",qualifications:"Fresh graduates and applicants with an agriculture-related course or interest are welcome."},
+ {id:2,initial:"IT",logo:"blue",company:"Isabela Tech Solutions, Inc.",title:"Junior IT Support Specialist",category:"Information Technology",location:"Cauayan City, Isabela",arrangement:"Hybrid",type:"Entry Level",level:"entry_level",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Provide basic technical support, troubleshoot hardware and software issues, and assist users with IT requests.",qualifications:"IT or computer-related graduate preferred. Basic networking and troubleshooting knowledge is an advantage."},
+ {id:3,initial:"R",logo:"orange",company:"Riverside Hotel and Restaurant",title:"Front Desk Assistant",category:"Hospitality",location:"Cauayan City, Isabela",arrangement:"On-site",type:"No Experience",level:"no_experience",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Welcome guests, assist with check-ins, answer inquiries, and coordinate with hotel staff to provide a positive guest experience.",qualifications:"Good communication skills, professionalism, and willingness to learn. Fresh graduates may apply."},
+ {id:4,initial:"L",logo:"pink",company:"Luzon Manufacturing Corp.",title:"Production Trainee",category:"Manufacturing",location:"Alicia, Isabela",arrangement:"On-site",type:"Trainee",level:"internship",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Learn production processes, follow workplace safety procedures, and support the operations team under supervision.",qualifications:"Fresh graduates who are willing to learn and work collaboratively are encouraged to apply."},
+ {id:5,initial:"CA",logo:"purple",company:"Cauayan Admin Services",title:"Administrative Assistant",category:"Administration",location:"Cauayan City, Isabela",arrangement:"On-site",type:"Entry Level",level:"entry_level",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Assist with document preparation, filing, scheduling, data entry, and day-to-day office operations.",qualifications:"Organized, attentive to detail, and comfortable with common office software. Fresh graduates welcome."},
+ {id:6,initial:"CS",logo:"blue",company:"North Valley Customer Care",title:"Customer Service Representative",category:"Customer Service",location:"Cauayan City, Isabela",arrangement:"On-site",type:"No Experience",level:"no_experience",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Respond to customer questions, document concerns, and provide clear and helpful service through approved channels.",qualifications:"Good verbal and written communication skills. Training may be provided for entry-level candidates."},
+ {id:7,initial:"M",logo:"orange",company:"Isabela Market Partners",title:"Marketing Assistant",category:"Marketing",location:"Naguilian, Isabela",arrangement:"Hybrid",type:"Entry Level",level:"entry_level",salary:"Salary disclosed by employer",posted:"Demo listing",description:"Support campaign planning, prepare basic content, coordinate promotional activities, and organize marketing records.",qualifications:"Marketing, communications, business, or related graduates are welcome."}
+];
+let activeLevel="";
+const jobList=document.getElementById("jobList");
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderJobs(){
+ const key=document.getElementById("keyword").value.trim().toLowerCase();
+ const loc=document.getElementById("location").value;
+ const cat=document.getElementById("category").value;
+ const filtered=jobs.filter(j=>(!key||[j.title,j.company,j.category,j.description].join(" ").toLowerCase().includes(key))&&(!loc||j.location===loc||(loc==="Remote"&&j.arrangement==="Remote"))&&(!cat||j.category===cat)&&(!activeLevel||j.level===activeLevel));
+ document.getElementById("resultCount").textContent=`${filtered.length} sample listing${filtered.length===1?"":"s"} · Demo data for website preview`;
+ document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("active",b.dataset.filter===activeLevel));
+ if(!filtered.length){jobList.innerHTML='<div class="empty"><strong>No matching jobs found</strong>Try another keyword, location, or category.</div>';return}
+ jobList.innerHTML=filtered.map(j=>`<article class="job-card"><div class="company-logo ${j.logo}">${esc(j.initial)}</div><div class="job-main"><h3>${esc(j.title)}</h3><div class="company">${esc(j.company)}</div><div class="job-meta"><span>📍 ${esc(j.location)}</span><span>· ${esc(j.arrangement)}</span></div><div class="job-tags"><span class="tag">${esc(j.type)}</span><span class="tag neutral">${esc(j.category)}</span></div></div><div class="job-action"><span class="posted">${esc(j.posted)}</span><button class="btn btn-primary" onclick="viewJob(${j.id})">View & Apply →</button></div></article>`).join("");
+}
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();renderJobs();document.getElementById("jobs").scrollIntoView({behavior:"smooth"})});
+document.getElementById("quickFilters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;activeLevel=b.dataset.filter;renderJobs()});
+document.getElementById("clearFilters").addEventListener("click",e=>{e.preventDefault();document.getElementById("keyword").value="";document.getElementById("location").value="";document.getElementById("category").value="";activeLevel="";renderJobs()});
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove("show"),3600)}
+function openModal(type,jobId){
+ const backdrop=document.getElementById("modalBackdrop"),title=document.getElementById("modalTitle"),desc=document.getElementById("modalDesc"),body=document.getElementById("modalBody");
+ if(type==="signup"){
+ title.textContent="Create your graduate account";desc.textContent="Build your profile and discover first-job opportunities.";
+ body.innerHTML=`<form id="signupForm" class="form-grid"><div class="form-group full"><label>Full name</label><input class="field" name="name" required placeholder="Your full name"></div><div class="form-group"><label>Email address</label><input class="field" name="email" type="email" required placeholder="you@example.com"></div><div class="form-group"><label>Contact number</label><input class="field" name="phone" type="tel" placeholder="09XX XXX XXXX"></div><div class="form-group"><label>Degree or course</label><input class="field" name="course" placeholder="e.g. BS Information Technology"></div><div class="form-group"><label>Graduation year</label><input class="field" name="year" type="number" min="1990" max="2100" placeholder="2026"></div><div class="form-group full"><label>Barangay of residence</label><select class="field" name="barangay"><option>Marabulig 1</option><option>Other barangay</option><option>Outside Cauayan City</option></select></div><div class="form-group full"><label>Create password</label><input class="field" name="password" type="password" minlength="8" required placeholder="At least 8 characters"></div><div class="form-group full"><div class="form-note">Your complete home address and residency documents will not appear on your public profile. Resident verification is optional and reviewed separately.</div></div><div class="form-group full"><button class="btn btn-primary" type="submit">Create Account</button></div></form>`;
+ document.getElementById("signupForm").addEventListener("submit",e=>{e.preventDefault();closeModal();showToast("Demo only: registration UI works, but a backend is needed to securely create your account.")});
+ }else if(type==="login"){
+ title.textContent="Log in to Career Connect";desc.textContent="Access your profile, saved jobs, and applications.";
+ body.innerHTML=`<form id="modalLogin" class="login-form"><input class="field" type="email" required placeholder="Email address"><input class="field" type="password" required placeholder="Password"><button class="btn btn-primary">Log In</button><button type="button" class="btn btn-outline" onclick="openModal('signup')">Create a new account</button></form>`;
+ document.getElementById("modalLogin").addEventListener("submit",e=>{e.preventDefault();closeModal();showToast("Demo only: connect authentication to the backend to enable login.")});
+ }else if(type==="forgot"){
+ title.textContent="Reset your password";desc.textContent="Enter your account email to request a secure reset link.";
+ body.innerHTML=`<form id="forgotForm" class="login-form"><input class="field" type="email" required placeholder="Email address"><button class="btn btn-primary">Request Reset Link</button></form>`;
+ document.getElementById("forgotForm").addEventListener("submit",e=>{e.preventDefault();closeModal();showToast("Demo only: password reset requires a configured backend and email service.")});
+ }else if(type==="resident"){
+ title.textContent="Resident verification";desc.textContent="A private process for eligible Cauayan City residents.";
+ body.innerHTML=`<div class="form-note" style="margin-bottom:14px">1. Create your graduate account.<br>2. Request verification through the private dashboard.<br>3. An authorized verifier reviews the minimum required evidence.<br>4. If approved, you can choose whether to display a Cauayan City resident badge.</div><p style="margin-bottom:15px">Your full home address and supporting documents are never intended for public display. Verification should use an approved process and secure document storage.</p><button class="btn btn-primary" style="width:100%" onclick="openModal('signup')">Create Account to Get Started</button>`;
+ }else if(type==="job"){
+ const j=jobs.find(x=>x.id===jobId);if(!j)return;
+ title.textContent=j.title;desc.textContent=`${j.company} · ${j.location}`;
+ body.innerHTML=`<div class="job-tags" style="margin-bottom:14px"><span class="tag">${esc(j.type)}</span><span class="tag neutral">${esc(j.category)}</span></div><h3 style="font-size:14px;color:var(--navy)">About the role</h3><p>${esc(j.description)}</p><h3 style="font-size:14px;color:var(--navy)">Qualifications</h3><p>${esc(j.qualifications)}</p><div class="form-note" style="margin:14px 0">Preview listing only. This sample job has not been verified and is not a live vacancy. Confirm employer details before sharing personal information.</div><button class="btn btn-primary" style="width:100%" onclick="closeModal();openModal('signup')">Create Account to Apply</button>`;
+ }
+ backdrop.classList.add("show");document.body.style.overflow="hidden";
+}
+function closeModal(){document.getElementById("modalBackdrop").classList.remove("show");document.body.style.overflow=""}
+function viewJob(id){openModal("job",id)}
+document.getElementById("loginForm").addEventListener("submit",e=>{e.preventDefault();showToast("Demo only: connect the backend to enable secure login.")});
+document.getElementById("year").textContent=new Date().getFullYear();
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+renderJobs();
+</script>
+</body>
+</html>

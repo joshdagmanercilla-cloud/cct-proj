@@ -1,0 +1,6 @@
+{
+  "name": "Cauayan City Career Connect - Launch Audit & Production Portal",
+  "description": "Comprehensive pre-launch audit, security analysis, stress test simulator, and hardened production-ready portal for Cauayan City Career Connect.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
