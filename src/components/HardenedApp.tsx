@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { INITIAL_JOBS } from '../data/initialJobs';
 import { Job, JobApplication, ResidentVerificationRequest, UserProfile, UserRole, PaymentTransaction } from '../types';
+import { MiniJobMap } from './MiniJobMap';
 
 export const HardenedApp: React.FC = () => {
   // --- Persistent Storage State ---
@@ -222,11 +223,11 @@ export const HardenedApp: React.FC = () => {
         distanceKm: 0,
         minutes: 0,
         fare: 0,
-        commuteMode: 'Trabaho mula sa Bahay (WFH)',
+        commuteMode: 'Work from Home (Remote)',
         level: 'remote' as const,
-        label: '🔵 Remote (Walang Commute)',
+        label: '🔵 Remote (No Commute)',
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300',
-        tip: '100% online setup; internet connection lamang ang kailangan.'
+        tip: '100% online setup; high-speed internet connection required.'
       };
     }
 
@@ -254,43 +255,43 @@ export const HardenedApp: React.FC = () => {
     let fare = 15;
     let commuteMode = 'Tricycle';
     let level: 'very_near' | 'near' | 'moderate' | 'far' = 'very_near';
-    let label = '🟢 Napakalapit';
+    let label = '🟢 Very Near';
     let badgeColor = 'bg-emerald-100 text-emerald-900 border-emerald-300';
 
     if (adjustedKm <= 1.0) {
       minutes = 5;
       fare = 15;
-      commuteMode = 'Lakad o Maikling Trike';
+      commuteMode = 'Walking or Short Tricycle';
       level = 'very_near';
-      label = '🟢 Napakalapit (Lakad / Trike)';
+      label = '🟢 Very Near (Walk / Trike)';
       badgeColor = 'bg-emerald-100 text-emerald-900 border-emerald-300';
     } else if (adjustedKm <= 4.5) {
       minutes = Math.max(7, Math.round(adjustedKm * 2.5));
       fare = 20;
-      commuteMode = 'Tricycle / Jeep';
+      commuteMode = 'Tricycle / Jeepney';
       level = 'very_near';
-      label = '🟢 Malapit (Within Cauayan)';
+      label = '🟢 Near (Within Cauayan)';
       badgeColor = 'bg-emerald-100 text-emerald-900 border-emerald-300';
     } else if (adjustedKm <= 9.0) {
       minutes = Math.max(12, Math.round(adjustedKm * 2.2));
       fare = 30;
-      commuteMode = 'Regular Jeep / Trike';
+      commuteMode = 'Regular Jeepney / Trike';
       level = 'near';
-      label = '🟡 Katamtaman (Cauayan Metro)';
+      label = '🟡 Moderate (Cauayan Metro)';
       badgeColor = 'bg-teal-100 text-teal-900 border-teal-300';
     } else if (adjustedKm <= 16.0) {
       minutes = Math.max(20, Math.round(adjustedKm * 1.8));
       fare = 45;
-      commuteMode = 'Provincial Jeep / Bus';
+      commuteMode = 'Provincial Jeepney / Bus';
       level = 'moderate';
-      label = '🟠 Medyo Malayo (Karatig-Bayan)';
+      label = '🟠 Farther (Neighboring Town)';
       badgeColor = 'bg-amber-100 text-amber-900 border-amber-300';
     } else {
       minutes = Math.max(30, Math.round(adjustedKm * 1.7));
       fare = 60;
-      commuteMode = 'Bus / Van mula Terminal';
+      commuteMode = 'Bus / Van from Terminal';
       level = 'far';
-      label = '🔴 Malayo (Outer Isabela)';
+      label = '🔴 Far (Outer Isabela)';
       badgeColor = 'bg-rose-100 text-rose-900 border-rose-300';
     }
 
@@ -302,7 +303,7 @@ export const HardenedApp: React.FC = () => {
       level,
       label,
       badgeColor,
-      tip: job.commuteTip || `Isang sakay mula sa iyong pinanggalingan patungo sa ${job.location}.`
+      tip: job.commuteTip || `Direct ride from your current location heading to ${job.location}.`
     };
   };
 
@@ -342,7 +343,7 @@ export const HardenedApp: React.FC = () => {
     if (role === 'guest') {
       setCurrentUser({
         id: 'user-guest',
-        name: 'Bisita (Guest)',
+        name: 'Guest User',
         email: '',
         phone: '',
         role: 'guest',
@@ -378,7 +379,7 @@ export const HardenedApp: React.FC = () => {
     } else if (role === 'verifier') {
       setCurrentUser({
         id: 'user-lgu',
-        name: 'Hon. Kagawad / LGU Admin',
+        name: 'Hon. LGU Barangay Admin',
         email: 'lgu.marabulig1@cauayancity.gov.ph',
         phone: '09195551234',
         role: 'verifier',
@@ -396,7 +397,7 @@ export const HardenedApp: React.FC = () => {
     // Strict Philippine Phone Validation
     const phPhoneRegex = /^(09|\+639)\d{9}$/;
     if (!phPhoneRegex.test(applicantPhone.replace(/[\s-]+/g, ''))) {
-      setFormError('Paki-lagay ang tamang Philippine mobile number (e.g. 09171234567 o +639171234567).');
+      setFormError('Please enter a valid Philippine mobile number (e.g., 09171234567 or +639171234567).');
       return;
     }
 
@@ -445,18 +446,18 @@ export const HardenedApp: React.FC = () => {
       category: newJobCategory,
       location: newJobLocation,
       exactAddress: newJobExactAddress || `${newJobLocation}, Isabela`,
-      landmark: newJobLandmark || 'Malapit sa Maharlika Highway / Centro',
+      landmark: newJobLandmark || 'Near Maharlika Highway / Centro',
       distanceFromMarabulig1Km: calcDistance,
       estimatedCommuteMinutes: isRemote ? 0 : Math.round(calcDistance * 2.2),
-      commuteMode: isRemote ? 'Work from Home' : calcDistance <= 5 ? 'Tricycle / Regular Jeep' : 'Jeepney / Bus mula Terminal',
+      commuteMode: isRemote ? 'Work from Home' : calcDistance <= 5 ? 'Tricycle / Regular Jeepney' : 'Jeepney / Bus from Terminal',
       estimatedFarePhp: isRemote ? 0 : calcDistance <= 4 ? 20 : calcDistance <= 10 ? 30 : 50,
-      commuteTip: newJobCommuteTip || (isRemote ? '100% online setup.' : 'Madaling marating mula sa Cauayan Central Terminal o Marabulig 1.'),
+      commuteTip: newJobCommuteTip || (isRemote ? '100% online setup.' : 'Easily accessible from Cauayan Central Terminal or Marabulig 1.'),
       proximityLevel: isRemote ? 'remote' : calcDistance <= 4 ? 'very_near' : calcDistance <= 10 ? 'near' : 'moderate',
       arrangement: newJobArrangement,
       type: newJobLevel === 'no_experience' ? 'No Experience' : newJobLevel === 'internship' ? 'Trainee' : 'Entry Level',
       level: newJobLevel,
       salary: newJobSalary,
-      posted: 'Bago lang nai-post',
+      posted: 'Just posted',
       description: newJobDesc,
       qualifications: newJobQuals,
       contactEmail: newJobEmail,
@@ -517,7 +518,7 @@ export const HardenedApp: React.FC = () => {
   const handleResidencySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!resConsent) {
-      alert('Kailangan mong pumayag sa Data Privacy Act (RA 10173) consent bago mag-submit.');
+      alert('You must accept the Data Privacy Act (RA 10173) consent before submitting.');
       return;
     }
 
@@ -543,7 +544,7 @@ export const HardenedApp: React.FC = () => {
     setAuthError('');
 
     if (authPassword.length < 8) {
-      setAuthError('Ang password ay dapat may minimum na 8 characters.');
+      setAuthError('Password must be at least 8 characters long.');
       return;
     }
 
@@ -561,14 +562,14 @@ export const HardenedApp: React.FC = () => {
 
     setCurrentUser(newUser);
     setIsSignUpModalOpen(false);
-    alert(`Maligayang pagdating, ${authName}! Matagumpay na nagawa ang iyong account.`);
+    alert(`Welcome, ${authName}! Your account has been created successfully.`);
   };
 
   // Handle Login
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!authEmail) {
-      setAuthError('Pakilagay ang iyong email address.');
+      setAuthError('Please enter your email address.');
       return;
     }
     handleRoleChange('jobseeker');
@@ -600,9 +601,9 @@ export const HardenedApp: React.FC = () => {
 
           {/* Desktop Nav Links (Visible on Large Tablet / Desktop) */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <a href="#jobs" className="hover:text-emerald-700 transition">Trabaho (Jobs)</a>
+            <a href="#jobs" className="hover:text-emerald-700 transition">Jobs</a>
             <button onClick={() => setIsGuidanceModalOpen(true)} className="hover:text-emerald-700 transition text-left">
-              Para sa Graduates (RA 11261)
+              For Graduates (RA 11261)
             </button>
             <button 
               onClick={() => {
@@ -611,7 +612,7 @@ export const HardenedApp: React.FC = () => {
               }} 
               className="hover:text-emerald-700 transition flex items-center gap-1 text-emerald-700 font-bold"
             >
-              <Building2 className="w-4 h-4" /> Para sa Employers
+              <Building2 className="w-4 h-4" /> For Employers
             </button>
             <button onClick={() => setIsVerificationModalOpen(true)} className="hover:text-emerald-700 transition flex items-center gap-1">
               <ShieldCheck className="w-4 h-4 text-emerald-600" /> Resident Verification
@@ -653,10 +654,10 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsApplicationsDrawerOpen(true)}
               className="relative p-2 sm:p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition text-xs font-bold flex items-center gap-1.5 min-h-[40px]"
-              aria-label="Tignan ang aking mga aplikasyon"
+              aria-label="View my applications"
             >
               <Briefcase className="w-4 h-4 text-emerald-700" />
-              <span className="hidden sm:inline">Aplikasyon</span>
+              <span className="hidden sm:inline">Applications</span>
               <span className="bg-emerald-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {applications.length}
               </span>
@@ -700,7 +701,7 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-xl min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="Buksan ang menu"
+              aria-label="Open menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -710,7 +711,7 @@ export const HardenedApp: React.FC = () => {
         {/* Mobile & Tablet Dropdown Navigation */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-white border-b border-slate-200 p-4 space-y-3 shadow-xl animate-in slide-in-from-top-2">
-            <div className="text-xs font-bold text-slate-500 mb-1">Pumili ng Role / Portal:</div>
+            <div className="text-xs font-bold text-slate-500 mb-1">Select Role / Portal:</div>
             <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-xs font-bold text-center mb-3">
               <button
                 onClick={() => { handleRoleChange('jobseeker'); setIsMobileMenuOpen(false); }}
@@ -739,14 +740,14 @@ export const HardenedApp: React.FC = () => {
                 className="flex items-center gap-2.5 py-2.5 px-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 rounded-xl min-h-[44px]"
               >
                 <Briefcase className="w-4 h-4 text-emerald-700" />
-                <span>Mga Bakanteng Trabaho (Jobs)</span>
+                <span>Available Job Openings</span>
               </a>
               <button 
                 onClick={() => { setIsGuidanceModalOpen(true); setIsMobileMenuOpen(false); }}
                 className="w-full flex items-center gap-2.5 text-left py-2.5 px-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 rounded-xl min-h-[44px]"
               >
                 <GraduationCap className="w-4 h-4 text-emerald-700" />
-                <span>Para sa Graduates (RA 11261 Libreng Dokumento)</span>
+                <span>For Graduates (RA 11261 Free Documents)</span>
               </button>
               <button 
                 onClick={() => { 
@@ -757,7 +758,7 @@ export const HardenedApp: React.FC = () => {
                 className="w-full flex items-center gap-2.5 text-left py-2.5 px-2 text-sm font-bold text-emerald-700 hover:bg-emerald-50 rounded-xl min-h-[44px]"
               >
                 <Building2 className="w-4 h-4 text-emerald-700" />
-                <span>Mag-post ng Trabaho (Employer Portal)</span>
+                <span>Post a Job (Employer Portal)</span>
               </button>
               <button 
                 onClick={() => { setIsVerificationModalOpen(true); setIsMobileMenuOpen(false); }}
@@ -797,11 +798,11 @@ export const HardenedApp: React.FC = () => {
               <MapPin className="w-3.5 h-3.5 text-emerald-400" /> Cauayan City, Isabela & Region II
             </div>
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-              Ang Unang Hakbang sa Iyong Karera, <br />
-              <span className="text-emerald-400">Dito Nagsisimula.</span>
+              The First Step in Your Career, <br />
+              <span className="text-emerald-400">Starts Right Here.</span>
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl">
-              Job portal na para sa mga fresh graduates, first-time job seekers, at mga residente ng Barangay Marabulig 1 at karatig-bayan sa Isabela.
+              Job portal dedicated to fresh graduates, first-time job seekers, and residents of Barangay Marabulig 1 and neighboring Isabela communities.
             </p>
           </div>
 
@@ -813,7 +814,7 @@ export const HardenedApp: React.FC = () => {
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Posisyon, kasanayan, o kumpanya..."
+                placeholder="Job title, skill, or company..."
                 className="w-full text-base sm:text-sm bg-transparent focus:outline-none"
               />
             </div>
@@ -825,7 +826,7 @@ export const HardenedApp: React.FC = () => {
                 onChange={(e) => setLocationFilter(e.target.value)}
                 className="w-full text-base sm:text-sm bg-transparent focus:outline-none text-slate-700"
               >
-                <option value="">Lahat ng Lokasyon</option>
+                <option value="">All Locations</option>
                 <option value="Cauayan City, Isabela">Cauayan City, Isabela</option>
                 <option value="Alicia, Isabela">Alicia, Isabela</option>
                 <option value="Naguilian, Isabela">Naguilian, Isabela</option>
@@ -840,7 +841,7 @@ export const HardenedApp: React.FC = () => {
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="w-full text-base sm:text-sm bg-transparent focus:outline-none text-slate-700"
               >
-                <option value="">Kalahatang Kategorya</option>
+                <option value="">All Categories</option>
                 <option value="Agriculture">Agriculture</option>
                 <option value="Information Technology">IT / Tech</option>
                 <option value="Hospitality">Hospitality</option>
@@ -857,7 +858,7 @@ export const HardenedApp: React.FC = () => {
                 className="w-full h-full min-h-[46px] sm:min-h-[44px] bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-950/20 active:scale-[0.98]"
               >
                 <Search className="w-4 h-4 md:hidden" />
-                <span>Maghanap</span>
+                <span>Search</span>
               </button>
             </div>
           </div>
@@ -875,19 +876,19 @@ export const HardenedApp: React.FC = () => {
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-sm font-black text-slate-900">Alamin ang Distansya at Pamasahe sa Trabaho</h3>
+                  <h3 className="text-sm font-black text-slate-900">Find Distance & Commute Fares to Work</h3>
                   <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full border border-emerald-300">
                     Live Commute Calculator
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  I-set ang iyong lokasyon upang malaman kung gaano kalapit o kalayo ang bawat trabaho bago mag-apply:
+                  Set your home location to calculate exact commute distance, duration, and fare for each job before applying:
                 </p>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto bg-white p-2 sm:p-1.5 rounded-2xl border border-emerald-200 shadow-sm">
-              <span className="text-xs font-bold text-slate-700 sm:pl-2 whitespace-nowrap">Nakatira ako sa:</span>
+              <span className="text-xs font-bold text-slate-700 sm:pl-2 whitespace-nowrap">I live in:</span>
               <select
                 value={userHomeLocation}
                 onChange={(e) => setUserHomeLocation(e.target.value)}
@@ -909,14 +910,14 @@ export const HardenedApp: React.FC = () => {
           {/* Quick Distance Filter Buttons (Horizontal touch scrollable on phone & tablet) */}
           <div className="flex items-center gap-2 overflow-x-auto pt-3 mt-3 border-t border-emerald-200/60 pb-1 scrollbar-thin">
             <span className="text-xs font-bold text-slate-600 whitespace-nowrap flex items-center gap-1 flex-shrink-0">
-              <Filter className="w-3.5 h-3.5 text-emerald-700" /> Distansya:
+              <Filter className="w-3.5 h-3.5 text-emerald-700" /> Distance Filter:
             </span>
             {[
-              { id: 'all', label: 'Lahat ng Distansya' },
-              { id: 'near', label: '🟢 Malapit (< 5 km • Trike/Lakad)' },
-              { id: 'mid', label: '🟡 Katamtaman (5-15 km • Regular Jeep)' },
-              { id: 'far', label: '🔴 Medyo Malayo (> 15 km • Provincial)' },
-              { id: 'remote', label: '🔵 Remote (Trabaho sa Bahay)' },
+              { id: 'all', label: 'All Distances' },
+              { id: 'near', label: '🟢 Near (< 5 km • Trike / Walking)' },
+              { id: 'mid', label: '🟡 Moderate (5-15 km • Regular Jeepney)' },
+              { id: 'far', label: '🔴 Far (> 15 km • Provincial Transit)' },
+              { id: 'remote', label: '🔵 Remote (Work from Home)' },
             ].map(d => (
               <button
                 key={d.id}
@@ -936,12 +937,12 @@ export const HardenedApp: React.FC = () => {
         {/* Quick Level Filter Chips */}
         <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-6">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1 flex-shrink-0">Antas:</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1 flex-shrink-0">Level:</span>
             {[
-              { id: 'all', label: 'Lahat ng Posisyon' },
-              { id: 'no_experience', label: 'Walang Karanasan (Fresh Grads)' },
-              { id: 'entry_level', label: 'Entry Level (0-1 Taon)' },
-              { id: 'internship', label: 'Trainee & OJT' }
+              { id: 'all', label: 'All Positions' },
+              { id: 'no_experience', label: 'No Experience Required (Fresh Grads)' },
+              { id: 'entry_level', label: 'Entry Level (0-1 Year)' },
+              { id: 'internship', label: 'Trainee & Internship' }
             ].map(f => (
               <button
                 key={f.id}
@@ -958,7 +959,7 @@ export const HardenedApp: React.FC = () => {
           </div>
 
           <div className="text-xs text-slate-500 font-medium">
-            Ipinapakita: <strong>{filteredJobs.length}</strong> trabaho malapit sa <strong>{userHomeLocation.split(',')[0]}</strong>
+            Showing: <strong>{filteredJobs.length}</strong> jobs near <strong>{userHomeLocation.split(',')[0]}</strong>
           </div>
         </div>
 
@@ -969,13 +970,13 @@ export const HardenedApp: React.FC = () => {
             {filteredJobs.length === 0 ? (
               <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-8 sm:p-12 text-center space-y-3">
                 <Briefcase className="w-12 h-12 text-slate-400 mx-auto" />
-                <h3 className="text-base font-bold text-slate-800">Walang nahanap na tugmang trabaho sa piniling distansya</h3>
-                <p className="text-xs sm:text-sm text-slate-500">Subukang i-set ang Distansya Filter sa "Lahat ng Distansya" o piliin ang ibang lokasyon.</p>
+                <h3 className="text-base font-bold text-slate-800">No matching jobs found for the selected distance</h3>
+                <p className="text-xs sm:text-sm text-slate-500">Try setting the Distance Filter to "All Distances" or choose a different starting location.</p>
                 <button
                   onClick={() => { setKeyword(''); setLocationFilter(''); setCategoryFilter(''); setLevelFilter('all'); setDistanceFilter('all'); }}
                   className="px-4 py-2 bg-slate-100 text-slate-700 font-bold text-xs rounded-lg hover:bg-slate-200 transition min-h-[40px]"
                 >
-                  I-reset ang lahat ng filters
+                  Reset all filters
                 </button>
               </div>
             ) : (
@@ -1025,12 +1026,12 @@ export const HardenedApp: React.FC = () => {
                             <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-extrabold text-[10px] sm:text-[11px] border ${prox.badgeColor}`}>
                               <MapPin className="w-3 h-3 flex-shrink-0" />
                               {prox.label}: {prox.distanceKm > 0 ? `${prox.distanceKm} km` : '0 km'}
-                              {prox.distanceKm > 0 && ` • ~${prox.minutes} mins byahe`}
+                              {prox.distanceKm > 0 && ` • ~${prox.minutes} mins travel`}
                             </span>
                             
                             {prox.distanceKm > 0 && (
                               <span className="text-slate-600 font-semibold bg-slate-100 px-2 py-0.5 rounded text-[10px] sm:text-[11px]">
-                                Pamasahe: <strong className="text-slate-900">₱{prox.fare}</strong> ({prox.commuteMode})
+                                One-way Fare: <strong className="text-slate-900">₱{prox.fare}</strong> ({prox.commuteMode})
                               </span>
                             )}
 
@@ -1061,7 +1062,7 @@ export const HardenedApp: React.FC = () => {
                       }}
                       className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl transition shadow-sm flex items-center justify-center gap-1.5 min-h-[44px] active:scale-[0.98]"
                     >
-                      Mag-apply Ngayon <ChevronRight className="w-3.5 h-3.5" />
+                      Apply Now <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -1079,18 +1080,18 @@ export const HardenedApp: React.FC = () => {
                   ✓
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-emerald-950">Residente ka ba ng Cauayan City?</h4>
+                  <h4 className="text-sm font-bold text-emerald-950">Are you a Cauayan City Resident?</h4>
                   <p className="text-xs text-emerald-700">Barangay Marabulig 1 & City Priority</p>
                 </div>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Kumuha ng opisyal na Resident Verification badge para sa prayoridad sa mga lokal na trabaho. Protektado ang iyong datos ayon sa RA 10173.
+                Get an official Resident Verification badge for priority consideration in local job hiring. Your data is protected under RA 10173.
               </p>
               <button
                 onClick={() => setIsVerificationModalOpen(true)}
                 className="w-full py-2 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition shadow-sm min-h-[44px]"
               >
-                Mag-verify ng Residency →
+                Verify Residency →
               </button>
             </div>
 
@@ -1101,13 +1102,13 @@ export const HardenedApp: React.FC = () => {
                 <h4 className="text-sm font-bold text-slate-900">First Time Jobseekers Act (RA 11261)</h4>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Alamin kung paano makakakuha ng <strong>LIBRENG Barangay Clearance, NBI Clearance, Police Clearance, at Medical Certificate</strong> para sa iyong unang trabaho.
+                Learn how to obtain <strong>FREE Barangay Clearance, NBI Clearance, Police Clearance, and Medical Certificate</strong> for your first job application.
               </p>
               <button
                 onClick={() => setIsGuidanceModalOpen(true)}
                 className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 min-h-[44px]"
               >
-                Basahin ang Buong Gabay →
+                Read Full Guide →
               </button>
             </div>
 
@@ -1115,10 +1116,10 @@ export const HardenedApp: React.FC = () => {
             <div className="bg-slate-900 text-white rounded-2xl p-5 space-y-3 shadow-md">
               <div className="flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-blue-400" />
-                <h4 className="text-sm font-bold text-white">Naghahanap ng Lokal na Talent?</h4>
+                <h4 className="text-sm font-bold text-white">Looking for Local Talent?</h4>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Mag-post ng trabaho para sa mga fresh graduates sa Cauayan City. May opsyon para sa ₱499 Featured Listing via GCash / Maya.
+                Post job openings for fresh graduates in Cauayan City. Includes option for ₱499 Featured Listing via GCash / Maya.
               </p>
               <button
                 onClick={() => {
@@ -1127,7 +1128,7 @@ export const HardenedApp: React.FC = () => {
                 }}
                 className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition min-h-[44px]"
               >
-                Mag-post ng Trabaho (Employer Portal)
+                Post a Job (Employer Portal)
               </button>
             </div>
 
@@ -1136,7 +1137,7 @@ export const HardenedApp: React.FC = () => {
               <h4 className="font-bold text-slate-900 text-sm">PESO Cauayan City</h4>
               <p>📍 Ground Floor, Cauayan City Hall, Isabela</p>
               <p>☎ Hotline: (078) 652-2011 / 0917-555-PESO</p>
-              <p>⏰ Lunes - Biyernes: 8:00 AM - 5:00 PM</p>
+              <p>⏰ Monday - Friday: 8:00 AM - 5:00 PM</p>
             </div>
           </div>
         </div>
@@ -1149,7 +1150,7 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsApplyingModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Isara"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1159,9 +1160,9 @@ export const HardenedApp: React.FC = () => {
                 <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle className="w-9 h-9" />
                 </div>
-                <h3 className="text-xl font-black text-slate-900">Matagumpay na Naipasa ang Aplikasyon!</h3>
+                <h3 className="text-xl font-black text-slate-900">Application Submitted Successfully!</h3>
                 <p className="text-xs text-slate-600 max-w-md mx-auto">
-                  Ang iyong resume at cover letter ay naipadala na sa recruitment team ng <strong>{selectedJobForDetail.company}</strong>.
+                  Your resume and cover note have been forwarded to the hiring team at <strong>{selectedJobForDetail.company}</strong>.
                 </p>
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs font-mono text-slate-800">
                   Application Tracking Code: <strong className="text-emerald-700">{applicationSuccessId}</strong>
@@ -1174,13 +1175,13 @@ export const HardenedApp: React.FC = () => {
                     }}
                     className="px-5 py-2.5 bg-emerald-700 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition"
                   >
-                    Tignan sa My Applications
+                    View in My Applications
                   </button>
                   <button
                     onClick={() => setIsApplyingModalOpen(false)}
                     className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-200 transition"
                   >
-                    Isara
+                    Close
                   </button>
                 </div>
               </div>
@@ -1201,7 +1202,7 @@ export const HardenedApp: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-emerald-700" />
                           <h4 className="font-black text-xs sm:text-sm text-emerald-950">
-                            Impormasyon sa Lokasyon at Byahe (Commute Guide)
+                            Location & Commute Guide
                           </h4>
                         </div>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold border ${prox.badgeColor}`}>
@@ -1212,23 +1213,23 @@ export const HardenedApp: React.FC = () => {
                       {/* Route Summary Cards */}
                       <div className="grid grid-cols-3 gap-2 text-xs">
                         <div className="bg-white p-2.5 rounded-xl border border-emerald-200">
-                          <span className="text-slate-500 block text-[10px] font-bold uppercase">Distansya sa iyo:</span>
+                          <span className="text-slate-500 block text-[10px] font-bold uppercase">Distance to You:</span>
                           <span className="text-sm sm:text-base font-black text-emerald-950">
                             {prox.distanceKm > 0 ? `${prox.distanceKm} km` : '0 km (WFH)'}
                           </span>
-                          <span className="text-[10px] text-slate-500 block truncate">mula {userHomeLocation.split(',')[0]}</span>
+                          <span className="text-[10px] text-slate-500 block truncate">from {userHomeLocation.split(',')[0]}</span>
                         </div>
 
                         <div className="bg-white p-2.5 rounded-xl border border-emerald-200">
-                          <span className="text-slate-500 block text-[10px] font-bold uppercase">Tinatayang Byahe:</span>
+                          <span className="text-slate-500 block text-[10px] font-bold uppercase">Estimated Travel:</span>
                           <span className="text-sm sm:text-base font-black text-slate-900">
-                            {prox.distanceKm > 0 ? `~${prox.minutes} mins` : 'Walang Byahe'}
+                            {prox.distanceKm > 0 ? `~${prox.minutes} mins` : 'No Commute'}
                           </span>
                           <span className="text-[10px] text-slate-500 block truncate">{prox.commuteMode}</span>
                         </div>
 
                         <div className="bg-white p-2.5 rounded-xl border border-emerald-200">
-                          <span className="text-slate-500 block text-[10px] font-bold uppercase">Pamasahe (One-way):</span>
+                          <span className="text-slate-500 block text-[10px] font-bold uppercase">One-way Fare:</span>
                           <span className="text-sm sm:text-base font-black text-emerald-800">
                             {prox.distanceKm > 0 ? `₱${prox.fare}.00` : '₱0'}
                           </span>
@@ -1239,20 +1240,30 @@ export const HardenedApp: React.FC = () => {
                       {/* Exact Address & Landmark Details */}
                       <div className="bg-white p-3 rounded-xl border border-emerald-100 text-xs space-y-1.5">
                         <div className="flex items-start gap-1.5 text-slate-800">
-                          <span className="font-bold text-slate-500 whitespace-nowrap">Tiyak na Address:</span>
+                          <span className="font-bold text-slate-500 whitespace-nowrap">Exact Address:</span>
                           <strong className="text-slate-900 font-mono text-[11px]">{selectedJobForDetail.exactAddress || selectedJobForDetail.location}</strong>
                         </div>
                         {selectedJobForDetail.landmark && (
                           <div className="flex items-start gap-1.5 text-slate-700">
-                            <span className="font-bold text-slate-500 whitespace-nowrap">Landmark / Palatandaan:</span>
+                            <span className="font-bold text-slate-500 whitespace-nowrap">Landmark / Vicinity:</span>
                             <span>{selectedJobForDetail.landmark}</span>
                           </div>
                         )}
                         <div className="flex items-start gap-1.5 text-slate-600 pt-1 border-t border-slate-100">
-                          <span className="font-bold text-slate-500 whitespace-nowrap">Payo sa Byahe:</span>
+                          <span className="font-bold text-slate-500 whitespace-nowrap">Commute Advice:</span>
                           <span>{prox.tip}</span>
                         </div>
                       </div>
+
+                      {/* Mini Interactive Leaflet Map Preview */}
+                      <MiniJobMap
+                        job={selectedJobForDetail}
+                        userHomeLocation={userHomeLocation}
+                        distanceKm={prox.distanceKm}
+                        minutes={prox.minutes}
+                        commuteMode={prox.commuteMode}
+                        onHomeLocationChange={setUserHomeLocation}
+                      />
 
                       {/* Google Maps Directions Link */}
                       <div className="flex items-center justify-between pt-1">
@@ -1262,10 +1273,10 @@ export const HardenedApp: React.FC = () => {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 hover:text-emerald-950 underline"
                         >
-                          <span>🗺️ Buksan ang Direksyon sa Google Maps (Turn-by-turn) ↗</span>
+                          <span>🗺️ Open Turn-by-Turn Directions in Google Maps ↗</span>
                         </a>
                         <span className="text-[11px] text-slate-400">
-                          {prox.distanceKm > 15 ? '⚠️ Medyo malayo sa Centro' : '✓ Madaling marating'}
+                          {prox.distanceKm > 15 ? '⚠️ Further from Centro' : '✓ Easily accessible'}
                         </span>
                       </div>
                     </div>
@@ -1273,9 +1284,9 @@ export const HardenedApp: React.FC = () => {
                 })()}
 
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1">
-                  <div className="font-bold text-slate-800">Tungkol sa Trabaho:</div>
+                  <div className="font-bold text-slate-800">About the Job:</div>
                   <p className="text-slate-600 leading-relaxed">{selectedJobForDetail.description}</p>
-                  <div className="font-bold text-slate-800 pt-2">Kwalipikasyon:</div>
+                  <div className="font-bold text-slate-800 pt-2">Qualifications:</div>
                   <p className="text-slate-600 leading-relaxed">{selectedJobForDetail.qualifications}</p>
                 </div>
 
@@ -1289,7 +1300,7 @@ export const HardenedApp: React.FC = () => {
                 <form onSubmit={handleApplySubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
-                      <label className="font-bold text-slate-700 block mb-1">Buong Pangalan</label>
+                      <label className="font-bold text-slate-700 block mb-1">Full Name</label>
                       <input
                         type="text"
                         required
@@ -1338,12 +1349,12 @@ export const HardenedApp: React.FC = () => {
                   </div>
 
                   <div className="text-xs">
-                    <label className="font-bold text-slate-700 block mb-1">Mensahe o Cover Note sa HR (Optional)</label>
+                    <label className="font-bold text-slate-700 block mb-1">Message or Cover Note to HR (Optional)</label>
                     <textarea
                       rows={2}
                       value={coverNote}
                       onChange={(e) => setCoverNote(e.target.value)}
-                      placeholder="Ipaalam sa employer kung bakit interesado ka sa posisyong ito..."
+                      placeholder="Let the employer know why you are interested in this position..."
                       className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     />
                   </div>
@@ -1359,14 +1370,14 @@ export const HardenedApp: React.FC = () => {
                         required
                       />
                       <span className="text-[11px] text-amber-950 font-medium leading-tight">
-                        <strong>Kumpirmasyon sa Lokasyon ng Trabaho:</strong> Nabasa at batid ko na ang trabahong ito ay matatagpuan sa <u>{selectedJobForDetail.location}</u> ({selectedJobForDetail.exactAddress || selectedJobForDetail.landmark}), at handa akong pumasok ({selectedJobForDetail.arrangement}).
+                        <strong>Job Location Confirmation:</strong> I have reviewed and acknowledge that this job is located in <u>{selectedJobForDetail.location}</u> ({selectedJobForDetail.exactAddress || selectedJobForDetail.landmark}), and I am ready to report for duty under an {selectedJobForDetail.arrangement} arrangement.
                       </span>
                     </label>
                   </div>
 
                   <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-[11px] text-emerald-950 flex items-start gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-700 flex-shrink-0 mt-0.5" />
-                    <span>Protektado ang iyong resume sa ilalim ng Republic Act No. 10173 (Data Privacy Act). Ang authorized recruitment officer lamang ng {selectedJobForDetail.company} ang makakakita nito.</span>
+                    <span>Your resume is protected under Republic Act No. 10173 (Data Privacy Act of 2012). Only authorized recruitment personnel of {selectedJobForDetail.company} will have access to your submission.</span>
                   </div>
 
                   <button
@@ -1374,7 +1385,7 @@ export const HardenedApp: React.FC = () => {
                     disabled={isSubmittingApp || !locationAcknowledged}
                     className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition shadow-md shadow-emerald-950/20 min-h-[44px]"
                   >
-                    {isSubmittingApp ? 'Ipinapadala ang Aplikasyon...' : 'I-submit ang Aplikasyon'}
+                    {isSubmittingApp ? 'Submitting Application...' : 'Submit Application'}
                   </button>
                 </form>
               </>
@@ -1390,7 +1401,7 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsPostJobModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Isara"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1399,13 +1410,13 @@ export const HardenedApp: React.FC = () => {
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
                 <Building2 className="w-3.5 h-3.5" /> Employer Portal
               </div>
-              <h3 className="text-xl font-black text-slate-900 mt-2">Mag-post ng Bagong Bakanteng Trabaho</h3>
-              <p className="text-xs text-slate-500">I-connect ang iyong kumpanya sa mga talento sa Cauayan City.</p>
+              <h3 className="text-xl font-black text-slate-900 mt-2">Post a New Job Opening</h3>
+              <p className="text-xs text-slate-500">Connect your company with verified talent across Cauayan City and Isabela.</p>
             </div>
 
             <form onSubmit={handlePostJobSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Pangalan ng Kumpanya</label>
+                <label className="font-bold text-slate-700 block mb-1">Company Name</label>
                 <input
                   type="text"
                   required
@@ -1423,14 +1434,14 @@ export const HardenedApp: React.FC = () => {
                   required
                   value={newJobTitle}
                   onChange={(e) => setNewJobTitle(e.target.value)}
-                  placeholder="Hal. Junior Web Developer"
+                  placeholder="e.g. Junior Web Developer"
                   className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Kategorya</label>
+                  <label className="font-bold text-slate-700 block mb-1">Category</label>
                   <select
                     value={newJobCategory}
                     onChange={(e) => setNewJobCategory(e.target.value)}
@@ -1447,7 +1458,7 @@ export const HardenedApp: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Bayan / Siyudad sa Isabela</label>
+                  <label className="font-bold text-slate-700 block mb-1">Location / Municipality in Isabela</label>
                   <select
                     value={newJobLocation}
                     onChange={(e) => setNewJobLocation(e.target.value)}
@@ -1465,34 +1476,34 @@ export const HardenedApp: React.FC = () => {
               {/* Exact Address & Landmark for Proximity Awareness */}
               <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Tiyak na Address / Kalye</label>
+                  <label className="font-bold text-slate-700 block mb-1">Exact Address / Street</label>
                   <input
                     type="text"
                     value={newJobExactAddress}
                     onChange={(e) => setNewJobExactAddress(e.target.value)}
-                    placeholder="Hal. Maharlika Highway, Brgy. San Fermin"
+                    placeholder="e.g. Maharlika Highway, Brgy. San Fermin"
                     className="w-full p-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Malapit na Landmark</label>
+                  <label className="font-bold text-slate-700 block mb-1">Nearby Landmark</label>
                   <input
                     type="text"
                     value={newJobLandmark}
                     onChange={(e) => setNewJobLandmark(e.target.value)}
-                    placeholder="Hal. Katapat ng SM City Cauayan"
+                    placeholder="e.g. In front of SM City Cauayan"
                     className="w-full p-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
 
                 <div className="col-span-2">
-                  <label className="font-bold text-slate-700 block mb-1">Gabay sa Byahe / Commute Tip</label>
+                  <label className="font-bold text-slate-700 block mb-1">Commute Tip / Transit Advice</label>
                   <input
                     type="text"
                     value={newJobCommuteTip}
                     onChange={(e) => setNewJobCommuteTip(e.target.value)}
-                    placeholder="Hal. Isang sakay ng tricycle mula Marabulig 1 o regular jeep"
+                    placeholder="e.g. 1 tricycle ride from Marabulig 1 or regular jeepney route"
                     className="w-full p-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-xs"
                   />
                 </div>
@@ -1500,20 +1511,20 @@ export const HardenedApp: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Antas ng Karanasan</label>
+                  <label className="font-bold text-slate-700 block mb-1">Experience Level</label>
                   <select
                     value={newJobLevel}
                     onChange={(e) => setNewJobLevel(e.target.value as any)}
                     className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   >
-                    <option value="no_experience">Walang Karanasan (Fresh Grads)</option>
+                    <option value="no_experience">No Experience (Fresh Grads)</option>
                     <option value="entry_level">Entry Level</option>
                     <option value="internship">Trainee / Internship</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Sweldo (Salary Transparency)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Salary Range (Salary Transparency)</label>
                   <input
                     type="text"
                     required
@@ -1526,20 +1537,20 @@ export const HardenedApp: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Deskripsyon ng Trabaho</label>
+                <label className="font-bold text-slate-700 block mb-1">Job Description</label>
                 <textarea
                   rows={2}
                   required
                   value={newJobDesc}
                   onChange={(e) => setNewJobDesc(e.target.value)}
-                  placeholder="Ilarawan ang mga pangunahing gawain..."
+                  placeholder="Describe primary responsibilities and qualifications..."
                   className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
               {/* Tier Selection (Free vs Featured with GCash/Maya) */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
-                <div className="font-bold text-slate-900">Piliin ang Uri ng Listing:</div>
+                <div className="font-bold text-slate-900">Select Listing Tier:</div>
                 <div className="grid grid-cols-2 gap-2">
                   <label className={`p-3 rounded-xl border cursor-pointer transition flex flex-col justify-between ${
                     !isFeaturedTier ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-200 bg-white'
@@ -1553,7 +1564,7 @@ export const HardenedApp: React.FC = () => {
                       />
                       <span>Standard Post</span>
                     </div>
-                    <span className="text-[11px] text-slate-500 mt-1">Libre (Basic listing)</span>
+                    <span className="text-[11px] text-slate-500 mt-1">Free (Basic feed listing)</span>
                   </label>
 
                   <label className={`p-3 rounded-xl border cursor-pointer transition flex flex-col justify-between ${
@@ -1577,7 +1588,7 @@ export const HardenedApp: React.FC = () => {
                 type="submit"
                 className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition shadow-md shadow-blue-950/20 min-h-[44px]"
               >
-                {isFeaturedTier ? 'Magpatuloy sa GCash / Maya Checkout (₱499) →' : 'I-publish ang Libreng Job Opening'}
+                {isFeaturedTier ? 'Proceed to GCash / Maya Checkout (₱499) →' : 'Publish Free Job Opening'}
               </button>
             </form>
           </div>
@@ -1591,6 +1602,7 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsPaymentModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1599,8 +1611,8 @@ export const HardenedApp: React.FC = () => {
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
                 <CreditCard className="w-3.5 h-3.5" /> PayMongo / Philippine Payment Gateway
               </div>
-              <h3 className="text-xl font-black text-slate-900 mt-2">Magbayad para sa Featured Job Post</h3>
-              <p className="text-xs text-slate-500">Halaga: <strong className="text-emerald-700 text-sm">₱499.00 PHP</strong></p>
+              <h3 className="text-xl font-black text-slate-900 mt-2">Pay for Featured Job Listing</h3>
+              <p className="text-xs text-slate-500">Amount Due: <strong className="text-emerald-700 text-sm">₱499.00 PHP</strong></p>
             </div>
 
             <form onSubmit={handleProcessPayment} className="space-y-4 text-xs">
@@ -1637,7 +1649,7 @@ export const HardenedApp: React.FC = () => {
                   className="w-full p-2.5 bg-white border border-slate-300 rounded-xl font-mono text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
                 <p className="text-[11px] text-slate-500">
-                  Magpapadala ng simulated OTP authorization code sa inyong {paymentMethod} account.
+                  A simulated one-time authorization code will be sent to your {paymentMethod} account.
                 </p>
               </div>
 
@@ -1646,7 +1658,7 @@ export const HardenedApp: React.FC = () => {
                 disabled={isProcessingPayment}
                 className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition shadow-md shadow-emerald-950/20 flex items-center justify-center gap-2 min-h-[44px]"
               >
-                {isProcessingPayment ? 'Pinoproseso ang Pagbabayad...' : `Magbayad ng ₱499.00 via ${paymentMethod} →`}
+                {isProcessingPayment ? 'Processing Payment...' : `Pay ₱499.00 via ${paymentMethod} →`}
               </button>
             </form>
           </div>
@@ -1663,7 +1675,7 @@ export const HardenedApp: React.FC = () => {
 
             <div>
               <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700">Official Electronic Receipt</span>
-              <h3 className="text-xl font-black text-slate-900 mt-0.5">Matagumpay ang Pagbabayad!</h3>
+              <h3 className="text-xl font-black text-slate-900 mt-0.5">Payment Successful!</h3>
               <p className="text-xs text-slate-500 font-mono mt-1">Ref: {activeReceipt.referenceNumber}</p>
             </div>
 
@@ -1681,11 +1693,11 @@ export const HardenedApp: React.FC = () => {
                 <span className="font-bold text-emerald-800">{activeReceipt.method}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Petsa / Oras:</span>
+                <span className="text-slate-500">Date / Time:</span>
                 <span className="text-slate-800">{activeReceipt.timestamp}</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-2 font-sans text-sm">
-                <span className="font-bold text-slate-700">Kabuuang Halaga:</span>
+                <span className="font-bold text-slate-700">Total Amount:</span>
                 <span className="font-black text-emerald-800">₱{activeReceipt.amountPesos}.00 PHP</span>
               </div>
             </div>
@@ -1694,7 +1706,7 @@ export const HardenedApp: React.FC = () => {
               onClick={() => setIsReceiptModalOpen(false)}
               className="w-full py-3 bg-emerald-700 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition"
             >
-              Isara at Tignan ang Trabaho sa Feed
+              Close and View Job in Feed
             </button>
           </div>
         </div>
@@ -1707,7 +1719,7 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => { setIsVerificationModalOpen(false); setResSuccess(false); }}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Isara"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1716,8 +1728,8 @@ export const HardenedApp: React.FC = () => {
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
                 <ShieldCheck className="w-3.5 h-3.5" /> Cauayan City Resident Verification
               </div>
-              <h3 className="text-xl font-black text-slate-900 mt-2">Opisyal na Pagpapatunay ng Paninirahan</h3>
-              <p className="text-xs text-slate-500">Para sa mga residente ng Marabulig 1 at buong Cauayan City.</p>
+              <h3 className="text-xl font-black text-slate-900 mt-2">Official Residency Verification</h3>
+              <p className="text-xs text-slate-500">For residents of Marabulig 1 and all Cauayan City barangays.</p>
             </div>
 
             {/* If logged in as LGU Verifier: Show Admin Queue */}
@@ -1770,21 +1782,21 @@ export const HardenedApp: React.FC = () => {
             ) : resSuccess ? (
               <div className="text-center py-6 space-y-3">
                 <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto" />
-                <h4 className="text-lg font-bold text-slate-900">Naipadala na ang Inyong Kahilingan!</h4>
+                <h4 className="text-lg font-bold text-slate-900">Verification Request Submitted!</h4>
                 <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                  Susuriin ng awtorisadong LGU officer ng Barangay Marabulig 1 ang inyong dokumento. Makikita ang beripikasyon sa inyong profile sa loob ng 24 oras.
+                  An authorized LGU officer will review your documents. Your verified resident badge will appear on your profile within 24 hours.
                 </p>
                 <button
                   onClick={() => { setIsVerificationModalOpen(false); setResSuccess(false); }}
                   className="px-4 py-2 bg-emerald-700 text-white rounded-xl text-xs font-bold"
                 >
-                  Salamat
+                  Done
                 </button>
               </div>
             ) : (
               <form onSubmit={handleResidencySubmit} className="space-y-3 text-xs">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Buong Pangalan ng Residente</label>
+                  <label className="font-bold text-slate-700 block mb-1">Resident Full Name</label>
                   <input
                     type="text"
                     required
@@ -1797,7 +1809,7 @@ export const HardenedApp: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Barangay sa Cauayan City</label>
+                    <label className="font-bold text-slate-700 block mb-1">Barangay in Cauayan City</label>
                     <select
                       value={resBarangay}
                       onChange={(e) => setResBarangay(e.target.value)}
@@ -1810,12 +1822,12 @@ export const HardenedApp: React.FC = () => {
                       <option>District 2</option>
                       <option>District 3</option>
                       <option>Tagaran</option>
-                      <option>Iba pang Barangay sa Cauayan</option>
+                      <option>Other Cauayan Barangay</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="font-bold text-slate-700 block mb-1">Uri ng Patunay ng Paninirahan</label>
+                    <label className="font-bold text-slate-700 block mb-1">Type of Residency Proof</label>
                     <select
                       value={resIdType}
                       onChange={(e) => setResIdType(e.target.value)}
@@ -1830,19 +1842,19 @@ export const HardenedApp: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">ID Number (I-mask para sa privacy)</label>
+                  <label className="font-bold text-slate-700 block mb-1">ID Number (Masked for privacy)</label>
                   <input
                     type="text"
                     required
                     value={resIdNum}
                     onChange={(e) => setResIdNum(e.target.value)}
-                    placeholder="Hal. 1234-5678-9012"
+                    placeholder="e.g. 1234-5678-9012"
                     className="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Dokumento o Larawan ng ID</label>
+                  <label className="font-bold text-slate-700 block mb-1">Document / ID Photo Upload</label>
                   <input
                     type="file"
                     accept="image/*,.pdf"
@@ -1860,7 +1872,7 @@ export const HardenedApp: React.FC = () => {
                       className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500"
                     />
                     <span className="text-[11px] text-slate-600 leading-tight">
-                      <strong>Data Privacy Act (RA 10173) Consent:</strong> Pinapayagan ko ang awtorisadong LGU Admin ng Marabulig 1 na suriin ang aking dokumento para lamang sa resident verification. Hindi ito isasapubliko.
+                      <strong>Data Privacy Act (RA 10173) Consent:</strong> I authorize the designated LGU Barangay Administrator to inspect this document solely for residency verification. My information will not be published or shared.
                     </span>
                   </label>
                 </div>
@@ -1869,7 +1881,7 @@ export const HardenedApp: React.FC = () => {
                   type="submit"
                   className="w-full py-3 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition shadow-md shadow-emerald-950/20"
                 >
-                  I-submit ang Verification Request
+                  Submit Verification Request
                 </button>
               </form>
             )}
@@ -1884,37 +1896,37 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsGuidanceModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Isara"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="border-b border-slate-100 pb-3">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                <GraduationCap className="w-3.5 h-3.5" /> Gabay para sa Fresh Graduates
+                <GraduationCap className="w-3.5 h-3.5" /> Guide for Fresh Graduates
               </div>
               <h3 className="text-xl font-black text-slate-900 mt-2">Republic Act No. 11261</h3>
-              <p className="text-xs text-slate-500">First Time Jobseekers Assistance Act sa Cauayan City</p>
+              <p className="text-xs text-slate-500">First Time Jobseekers Assistance Act in Cauayan City</p>
             </div>
 
             <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
               <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-950">
-                <strong>Alam mo ba?</strong> Sa ilalim ng batas, LIBRE ang sumusunod na pre-employment requirements para sa first-time job seekers:
+                <strong>Did you know?</strong> Under Philippine law, the following pre-employment requirements are FREE for first-time jobseekers:
               </div>
 
               <ul className="list-disc pl-5 space-y-1.5">
-                <li><strong>Barangay Certification:</strong> Patunay na ikaw ay first-time job seeker (kunin sa Marabulig 1 Barangay Hall).</li>
-                <li><strong>Police Clearance:</strong> Libre sa Cauayan City Police Station.</li>
-                <li><strong>NBI Clearance:</strong> 1 libreng kopya mula sa NBI Regional Office.</li>
-                <li><strong>Medical Certificate:</strong> Mula sa City Health Office ng Cauayan.</li>
-                <li><strong>Birth & Marriage Certificates:</strong> 1 libreng first-time copy mula sa PSA.</li>
+                <li><strong>Barangay Certification:</strong> Official proof that you are a first-time jobseeker (obtain from your local Barangay Hall).</li>
+                <li><strong>Police Clearance:</strong> Free at the Cauayan City Police Station.</li>
+                <li><strong>NBI Clearance:</strong> 1 free copy issued by the NBI Regional Office.</li>
+                <li><strong>Medical Certificate:</strong> Issued free of charge by the Cauayan City Health Office.</li>
+                <li><strong>Birth & Marriage Certificates:</strong> 1 free first-time copy from the Philippine Statistics Authority (PSA).</li>
               </ul>
 
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
-                <div className="font-bold text-slate-900">Hakbang para Makakuha sa Cauayan City:</div>
-                <p>1. Pumunta sa Marabulig 1 Barangay Hall at humingi ng <em>First Time Jobseeker Barangay Certification</em>.</p>
-                <p>2. Ipresenta ang sertipikasyon sa PESO Cauayan City o ahensya ng gobyerno kung saan kukuha ng clearance.</p>
-                <p>3. Hindi ka sisingilin ng anumang government processing fee.</p>
+                <div className="font-bold text-slate-900">Steps to Claim Benefits in Cauayan City:</div>
+                <p>1. Visit the Marabulig 1 Barangay Hall (or your local barangay) and request a <em>First Time Jobseeker Barangay Certification</em>.</p>
+                <p>2. Present this certification to the Cauayan City Public Employment Service Office (PESO) or the issuing government agency.</p>
+                <p>3. All mandatory government processing fees will be completely waived.</p>
               </div>
             </div>
 
@@ -1922,7 +1934,7 @@ export const HardenedApp: React.FC = () => {
               onClick={() => setIsGuidanceModalOpen(false)}
               className="w-full py-2.5 bg-emerald-700 text-white font-bold text-xs rounded-xl"
             >
-              Naiintindihan Ko, Salamat!
+              Got It, Thank You!
             </button>
           </div>
         </div>
@@ -1935,38 +1947,38 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsPrivacyModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Isara"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-xl font-black text-slate-900">Patakaran sa Privacy (Data Privacy Policy)</h3>
-              <p className="text-xs text-slate-500">Nakaayon sa Philippine Data Privacy Act of 2012 (RA 10173)</p>
+              <h3 className="text-xl font-black text-slate-900">Data Privacy Policy</h3>
+              <p className="text-xs text-slate-500">Compliant with the Philippine Data Privacy Act of 2012 (RA 10173)</p>
             </div>
 
             <div className="space-y-3 text-xs text-slate-700 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
               <p>
-                Iginagalang ng <strong>Marabulig 1 Career Connect / Cauayan City Career Connect</strong> ang inyong karapatan sa privacy. Ang aming pagkolekta ng datos ay limitado lamang sa mga sumusunod:
+                <strong>Cauayan City Career Connect</strong> respects your fundamental right to privacy. Our data collection and processing activities are strictly limited to the following:
               </p>
-              <h4 className="font-bold text-slate-900">1. Anong Datos ang Kinokolekta:</h4>
-              <p>Pangalan, email address, mobile number, educational background, resume attachment, at residency verification documents para sa mga nag-aaplay.</p>
+              <h4 className="font-bold text-slate-900">1. Information We Collect:</h4>
+              <p>Full name, email address, Philippine mobile number, educational background, resume file, and residency verification documents for registered applicants.</p>
               
-              <h4 className="font-bold text-slate-900">2. Paano Ginagamit ang Datos:</h4>
-              <p>Ginagamit lamang ang inyong impormasyon upang i-endorso ang inyong aplikasyon sa kumpanyang inyong pinili, at upang i-validate ang inyong paninirahan sa Cauayan City sa tulong ng awtorisadong LGU staff.</p>
+              <h4 className="font-bold text-slate-900">2. How We Use Your Data:</h4>
+              <p>Your information is used strictly to endorse your applications to prospective employers you choose and to validate your local residency in Cauayan City with authorized LGU staff.</p>
 
-              <h4 className="font-bold text-slate-900">3. Pagbabahagi ng Impormasyon:</h4>
-              <p>HINDI kailanman ibebenta o ibabahagi sa mga advertisers ang inyong personal na impormasyon. Tanging ang employer na inyong inaplayan ang makakatanggap ng inyong resume.</p>
+              <h4 className="font-bold text-slate-900">3. Third-Party Sharing:</h4>
+              <p>We NEVER sell, lease, or share your personal data with advertisers or unverified third parties. Only the employer receiving your job application has access to your submission.</p>
 
-              <h4 className="font-bold text-slate-900">4. Inyong Karapatan (Data Subject Rights):</h4>
-              <p>May karapatan kayong humiling ng kopya, magpatama, o magpabura ng inyong personal na datos anumang oras sa pamamagitan ng pag-email sa opisyal na Data Protection Officer ng LGU.</p>
+              <h4 className="font-bold text-slate-900">4. Data Subject Rights:</h4>
+              <p>You retain the right to request access, correction, or permanent deletion of your personal data at any time by contacting our designated Data Protection Officer.</p>
             </div>
 
             <button
               onClick={() => setIsPrivacyModalOpen(false)}
               className="w-full py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl"
             >
-              Isara ang Patakaran
+              Close Privacy Policy
             </button>
           </div>
         </div>
@@ -1979,32 +1991,32 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsTermsModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
-              aria-label="Isara"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-xl font-black text-slate-900">Mga Tuntunin sa Paggamit (Terms of Service)</h3>
-              <p className="text-xs text-slate-500">Mga patakaran para sa mga Aplikante at Employers sa Cauayan City</p>
+              <h3 className="text-xl font-black text-slate-900">Terms of Service</h3>
+              <p className="text-xs text-slate-500">Rules and guidelines for Applicants and Employers in Cauayan City</p>
             </div>
 
             <div className="space-y-3 text-xs text-slate-700 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
-              <h4 className="font-bold text-slate-900">1. Para sa mga Aplikante:</h4>
-              <p>Tiyaking totoo at tumpak ang lahat ng impormasyong ilalagay sa resume. Bawal magpasa ng pekeng identification cards o bogus applications.</p>
+              <h4 className="font-bold text-slate-900">1. For Job Applicants:</h4>
+              <p>All information provided in applications and resumes must be accurate, truthful, and up-to-date. Submitting fraudulent credentials or identity documents is strictly prohibited.</p>
 
-              <h4 className="font-bold text-slate-900">2. Para sa mga Employers:</h4>
-              <p>Ipinagbabawal ang anumang "recruitment fee" o placement fee sa mga first-time job seekers ayon sa batas. Ang lahat ng job listing ay dapat may malinaw na salary range alinsunod sa DOLE Region II minimum wage standards.</p>
+              <h4 className="font-bold text-slate-900">2. For Employers:</h4>
+              <p>Charging placement or recruitment fees to jobseekers is prohibited by law (RA 11261). All job postings must display transparent salary ranges compliant with DOLE Region II minimum wage regulations.</p>
 
-              <h4 className="font-bold text-slate-900">3. Limitasyon ng Pananagutan:</h4>
-              <p>Ang Career Connect ay isang platform para mag-ugnay ng talent at local businesses. Ang pinal na desisyon sa hiring ay nasa pagitan ng employer at aplikante.</p>
+              <h4 className="font-bold text-slate-900">3. Limitation of Liability:</h4>
+              <p>Career Connect serves as a community employment bridge. Hiring decisions, contracts, and employment terms are established directly between employers and candidates.</p>
             </div>
 
             <button
               onClick={() => setIsTermsModalOpen(false)}
               className="w-full py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl"
             >
-              Isara ang Tuntunin
+              Close Terms
             </button>
           </div>
         </div>
@@ -2017,13 +2029,14 @@ export const HardenedApp: React.FC = () => {
             <button
               onClick={() => setIsSignUpModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <h3 className="text-xl font-black text-slate-900">Gumawa ng Bagong Account</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Sumali sa Cauayan City Career Connect community.</p>
+              <h3 className="text-xl font-black text-slate-900">Create a New Account</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Join the Cauayan City Career Connect community.</p>
             </div>
 
             {authError && (
@@ -2034,7 +2047,7 @@ export const HardenedApp: React.FC = () => {
 
             <form onSubmit={handleSignUpSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Buong Pangalan</label>
+                <label className="font-bold text-slate-700 block mb-1">Full Name</label>
                 <input
                   type="text"
                   required
@@ -2058,7 +2071,7 @@ export const HardenedApp: React.FC = () => {
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Uri ng Account</label>
+                <label className="font-bold text-slate-700 block mb-1">Account Type</label>
                 <select
                   value={authRole}
                   onChange={(e) => setAuthRole(e.target.value as any)}
@@ -2086,7 +2099,7 @@ export const HardenedApp: React.FC = () => {
                 type="submit"
                 className="w-full py-3 bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition min-h-[44px]"
               >
-                Gumawa ng Account
+                Create Account
               </button>
             </form>
           </div>
@@ -2096,17 +2109,18 @@ export const HardenedApp: React.FC = () => {
       {/* --- MODAL 10: Real Stateful Login Modal --- */}
       {isLoginModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative space-y-4">
+          <div className="bg-white rounded-3xl max-sm w-full p-6 shadow-2xl relative space-y-4">
             <button
               onClick={() => setIsLoginModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div>
-              <h3 className="text-xl font-black text-slate-900">Mag-login sa Portal</h3>
-              <p className="text-xs text-slate-500 mt-1">Pumili ng active persona o mag-sign in:</p>
+              <h3 className="text-xl font-black text-slate-900">Sign In to Career Portal</h3>
+              <p className="text-xs text-slate-500 mt-1">Select an active persona or sign in:</p>
             </div>
 
             <div className="space-y-2">
@@ -2136,12 +2150,12 @@ export const HardenedApp: React.FC = () => {
             </div>
 
             <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
-              Wala pang account?{' '}
+              Don't have an account yet?{' '}
               <button
                 onClick={() => { setIsLoginModalOpen(false); setIsSignUpModalOpen(true); }}
                 className="font-bold text-emerald-700 hover:underline"
               >
-                Mag-Sign Up Dito
+                Sign Up Here
               </button>
             </div>
           </div>
@@ -2156,11 +2170,12 @@ export const HardenedApp: React.FC = () => {
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center gap-2">
                   <Briefcase className="w-5 h-5 text-emerald-700" />
-                  <h3 className="text-lg font-black text-slate-900">Aking mga Aplikasyon</h3>
+                  <h3 className="text-lg font-black text-slate-900">My Job Applications</h3>
                 </div>
                 <button
                   onClick={() => setIsApplicationsDrawerOpen(false)}
                   className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+                  aria-label="Close"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2168,7 +2183,7 @@ export const HardenedApp: React.FC = () => {
 
               {applications.length === 0 ? (
                 <div className="text-center py-12 text-slate-500 text-xs">
-                  Wala ka pang naipapasang aplikasyon. Mag-browse ng trabaho sa feed!
+                  You haven't submitted any applications yet. Browse the job listings to apply!
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -2191,7 +2206,7 @@ export const HardenedApp: React.FC = () => {
                       <div className="text-[11px] text-slate-500 space-y-0.5 pt-1 border-t border-slate-200/60">
                         <div>Ref: <span className="font-mono font-bold text-slate-700">{app.id}</span></div>
                         <div>Resume: <span className="font-medium text-slate-700">{app.resumeFileName}</span></div>
-                        <div>Petsa: {app.appliedAt}</div>
+                        <div>Date: {app.appliedAt}</div>
                       </div>
                     </div>
                   ))}
@@ -2204,7 +2219,7 @@ export const HardenedApp: React.FC = () => {
                 onClick={() => setIsApplicationsDrawerOpen(false)}
                 className="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-bold"
               >
-                Bumalik sa Trabaho Feed
+                Return to Job Feed
               </button>
             </div>
           </div>
@@ -2253,7 +2268,7 @@ export const HardenedApp: React.FC = () => {
           className="flex flex-col items-center gap-0.5 text-[10px] font-bold text-emerald-800 min-h-[44px] justify-center px-2 active:scale-95 transition"
         >
           <Briefcase className="w-5 h-5 text-emerald-700" />
-          <span>Trabaho</span>
+          <span>Jobs</span>
         </a>
         <button 
           onClick={() => setIsApplicationsDrawerOpen(true)}
@@ -2265,7 +2280,7 @@ export const HardenedApp: React.FC = () => {
               {applications.length}
             </span>
           </div>
-          <span>Aplikasyon</span>
+          <span>Applications</span>
         </button>
         <button 
           onClick={() => {
