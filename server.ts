@@ -90,7 +90,9 @@ const clearSessionCookie = (res: Response) => {
   res.clearCookie(cookieName, { httpOnly: true, secure: isProduction, sameSite: 'lax', path: '/' });
 };
 
-const userSelect = 'SELECT id, name, email, phone, role, company_name, created_at FROM users';
+const publicUserSelect = 'SELECT id, name, email, phone, role, company_name, created_at FROM users';
+const authenticatedUserSelect = 'SELECT id, name, email, phone, role, company_name, password_hash, created_at FROM users';
+
 const toPublicUser = (row: Record<string, unknown>) => ({
   id: row.id,
   name: row.name,
@@ -153,7 +155,7 @@ app.post('/api/auth/login', async (req, res) => {
   if (!email || !password || password.length > 72) return res.status(400).json({ error: 'Enter your email and password.' });
 
   try {
-    const result = await pool.query(`${userSelect} WHERE email = $1 LIMIT 1`, [email]);
+    const result = await pool.query(`${authenticatedUserSelect} WHERE email = $1 LIMIT 1`, [email]);
     const user = result.rows[0];
     if (!user || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ error: 'Email or password is incorrect.' });
@@ -170,7 +172,7 @@ app.get('/api/auth/session', async (req, res) => {
   const userId = getSessionUserId(req);
   if (!userId) return res.status(401).json({ error: 'Not signed in.' });
   try {
-    const result = await pool.query(`${userSelect} WHERE id = $1 LIMIT 1`, [userId]);
+    const result = await pool.query(`${publicUserSelect} WHERE id = $1 LIMIT 1`, [userId]);
     if (!result.rows[0]) {
       clearSessionCookie(res);
       return res.status(401).json({ error: 'Session is no longer valid.' });
