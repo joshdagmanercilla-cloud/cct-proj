@@ -1,33 +1,45 @@
-# Full-stack Firebase setup
+# Firebase + Firestore + Express setup
 
-This branch adds an Express API backed by Firestore REST and Firebase Authentication. Email/password and Facebook sign-in use the Firebase Auth implementation in `src/services/cloudAuth.ts`; API routes validate each Firebase ID token with Firebase before accessing data. The server uses a service account only on the server. Never add its private key to Vite variables or commit it.
+This branch contains a Firebase Authentication sign-in screen, an Express API, and a Firestore REST persistence layer. Configure the external Firebase and Meta projects before use. This is a staged integration, not a production launch: the legacy `HardenedApp` still has demo role switching and local-only flows, and its application/job/payment/verification UI has not yet been migrated to call all cloud endpoints. Do not enter real personal data or accept payments until that migration and a security/privacy review are complete.
 
-## Required project setup
+## Configure services
 
-1. Create a Firebase project and register a web app. Enable Email/Password in Authentication.
-2. For Facebook, create a Meta app, enable Facebook Login, configure its OAuth redirect URI in Meta, and enable the Facebook provider in Firebase Authentication. Store the Meta App Secret only in Firebase Console.
-3. Enable Firestore in Native mode. Deploy `firestore.rules`; these rules deny browser access because application data is accessed through the API.
-4. Create a service account with the minimum Firestore permissions needed (start with Cloud Datastore User), download its JSON securely, and configure server environment variables:
-   - `FIREBASE_WEB_API_KEY`: Firebase Web API key (also set as `VITE_FIREBASE_API_KEY` for the frontend auth screen).
-   - `FIREBASE_SERVICE_ACCOUNT_JSON`: full service-account JSON. Keep this server-only secret in the hosting provider's secret manager.
-   - `VITE_FACEBOOK_APP_ID` and `VITE_FACEBOOK_GRAPH_VERSION`: frontend Facebook app ID and supported Graph API version.
-5. Add your production hostname to Firebase Authentication's authorized domains. Set the Meta app to Live only after its review and domain/security configuration are complete.
-6. Deploy with `bun run build` followed by `bun run start`. The host must inject `PORT` and the server secrets at runtime.
+1. Create a Firebase project and register a web app. Enable Email/Password in Firebase Authentication.
+2. For Facebook sign-in, create a Meta app with Facebook Login, configure the Firebase OAuth redirect URI in Meta, and enable Facebook in Firebase Authentication. Keep the Meta App Secret in Firebase Console only.
+3. Enable Firestore Native mode and deploy `firestore.rules` (browser reads/writes are denied; Express is the data access layer).
+4. Create a service account with the minimum Firestore permissions needed and configure server secrets in the hosting provider:
+   - `FIREBASE_SERVICE_ACCOUNT_JSON`: full service-account JSON; server-only, never a Vite variable.
+   - `FIREBASE_WEB_API_KEY`: Firebase Web API key used by the server to validate Firebase ID tokens.
+   - `VITE_FIREBASE_API_KEY`: same Firebase Web API key for browser sign-in. This is public client configuration, not an admin secret.
+   - `VITE_FACEBOOK_APP_ID` and `VITE_FACEBOOK_GRAPH_VERSION`: Facebook app ID and enabled Graph API version for the web client.
+5. Add local/deployed hosts to Firebase Auth authorized domains and the production domain/redirect URI to Meta configuration.
+6. Run `bun install`, `bun run build`, then `bun run start`. The server needs `PORT` and the server-only secrets at runtime. For Vite, put public browser config in `.env.local`; never put service-account data there.
 
-## API currently implemented
+## API routes
 
-- `GET /api/bootstrap` — authenticated user's profile, public job collection, and that user's application records.
-- `PUT /api/profile` — upserts the signed-in user's profile; role and verification flags are derived server-side, not from submitted fields.
-- `POST /api/applications` — validates and saves application metadata under the authenticated user's Firestore path. It does not accept resume files.
-- `POST /api/jobs` — requires Firebase custom claim `role: employer`; creates a pending-review listing. Assign employer claims only through a trusted administrator process.
-- `GET /health` — process health only; it does not verify Firestore availability.
+- `GET /health` checks that the process is responding; it does not verify dependencies.
+- `GET /api/bootstrap` requires a Firebase ID token and returns profile, published jobs, and the user's applications.
+- `PUT /api/profile` requires sign-in; user ID/email are derived from the verified token and browser-supplied role/verification flags are ignored.
+- `POST /api/applications` requires sign-in, validates the job and contact fields, and stores application metadata under the caller's user document.
+- `POST /api/jobs` requires a server-assigned Firebase custom claim `role: employer`, validates fields, and creates a `pending_review` job. Claims must be assigned through a trusted admin process, never from the browser.
 
-The API uses a small per-process request throttle as a safety layer. It is not a distributed limiter; use a managed gateway/WAF for production traffic. Configure backups, alerting, monitoring, and a dependency-aware health check in the hosting platform.
+The API uses a basic in-process request throttle. It is not shared across instances; use a managed gateway/WAF or distributed limiter for a public production service. Firestore service-account access must remain server-only. Add managed backups, deployment secrets, monitoring, alerting, and a dependency-aware health check before launch.
 
-## Explicitly not enabled yet
+## Remaining production work
 
-Do not treat this as a complete production launch. The existing React screens still contain demo role switching, client-side localStorage flows, simulated payments and verification, and the app has not yet been refactored to use these API routes for every operation. This patch lays down the secure server/data foundation, but wiring all UI state to the API is still required. Resume/residency uploads need private object storage, file size/type validation and scanning, and short-lived access URLs. Payments need a real provider integration and signed webhook verification; never mark a payment complete in the browser. Do not collect real resumes, identity documents, payments, or sensitive personal data until the remaining integration and privacy review are complete.
+- Migrate the current `HardenedApp` UI and state fully to the API. Its existing role switcher, applications, job posting, payment, and residency interactions remain demo/client-local and are not secured by the new API merely because the auth screen is connected.
+- Seed reviewed public job records into Firestore and implement administrative moderation and employer claim provisioning.
+- Add private object storage for resumes/verification documents, including upload authorization, size/type checks, scanning, retention/deletion controls, and expiring access URLs. The API intentionally does not accept file uploads.
+- Integrate a real payment provider using server-side checkout and signed, idempotent webhooks. Never mark payments complete in client code.
+- Add automated tests, distributed rate limiting, structured logs/error reporting, backups, alerts, and a security/privacy review.
 
-## Local development
+## Local run
 
-Copy `.env.example` to `.env.local` for Vite's public Firebase configuration. Set `FIREBASE_WEB_API_KEY` and `FIREBASE_SERVICE_ACCOUNT_JSON` only in the server environment. A `.env.local` file is ignored by Git; do not put the service account JSON into any `VITE_` variable. The Facebook provider and all Firebase/Meta domain settings must be configured before those sign-in methods work.
+```bash
+cp .env.example .env.local
+# Set VITE_FIREBASE_API_KEY, VITE_FACEBOOK_APP_ID, and VITE_FACEBOOK_GRAPH_VERSION in .env.local
+# Configure FIREBASE_WEB_API_KEY and FIREBASE_SERVICE_ACCOUNT_JSON in the server environment
+bun install
+bun run build
+bun run start
+```
