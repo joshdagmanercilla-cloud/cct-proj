@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The Express API uses a server service account. Browser clients must not access application records directly.
+    // Keep these rules closed even when a client ships with a Firebase project config.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
