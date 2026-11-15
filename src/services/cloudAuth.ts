@@ -38,20 +38,25 @@ export async function signInWithFacebook(): Promise<CloudUser> {
     options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
   });
   if (error) throw new Error(error.message);
-  // Supabase redirects to Facebook; the auth gate restores the session on return.
+  // OAuth redirects the browser; this keeps the form's working state until navigation.
   return new Promise(() => undefined);
 }
 
 export async function restoreSession(): Promise<CloudUser | null> {
-  const client = requireSupabase();
-  const { data, error } = await client.auth.getSession();
-  if (error || !data.session) return null;
-  const { data: userData, error: userError } = await client.auth.getUser();
-  if (userError || !userData.user) {
-    await client.auth.signOut();
+  try {
+    const client = requireSupabase();
+    const { data, error } = await client.auth.getSession();
+    if (error || !data.session) return null;
+    const { data: userData, error: userError } = await client.auth.getUser();
+    if (userError || !userData.user) {
+      await client.auth.signOut();
+      return null;
+    }
+    return toCloudUser(userData.user);
+  } catch {
+    // Missing public config should leave the gate usable and show configuration errors on submit.
     return null;
   }
-  return toCloudUser(userData.user);
 }
 
 export async function getIdToken(): Promise<string> {
@@ -62,7 +67,8 @@ export async function getIdToken(): Promise<string> {
   return data.session.access_token;
 }
 
-export async function signOut() {
-  await requireSupabase().auth.signOut();
+export async function signOut(): Promise<void> {
+  const { error } = await requireSupabase().auth.signOut();
+  if (error) throw new Error(error.message);
   localStorage.removeItem('cauayan_user_v2');
 }

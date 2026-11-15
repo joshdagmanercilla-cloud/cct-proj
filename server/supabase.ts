@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export type AuthenticatedUser = {
@@ -43,6 +45,12 @@ function throwIfError(error: { message: string } | null) {
   if (error) throw new Error(`Supabase request failed: ${error.message}`);
 }
 
+function appRole(appMetadata: Record<string, unknown>) {
+  return typeof appMetadata.role === 'string' && ['employer', 'verifier', 'admin'].includes(appMetadata.role)
+    ? appMetadata.role
+    : 'jobseeker';
+}
+
 export async function getProfile(accessToken: string, id: string): Promise<SupabaseRow | null> {
   const { data, error } = await userClient(accessToken).from('profiles').select('*').eq('id', id).maybeSingle();
   throwIfError(error);
@@ -85,4 +93,38 @@ export async function createJob(accessToken: string, row: SupabaseRow): Promise<
   const { data, error } = await userClient(accessToken).from('jobs').insert(row).select().single();
   throwIfError(error);
   return data as SupabaseRow;
+}
+
+export async function uploadPrivateDocument(accessToken: string, userId: string, fileName: string, file: Buffer, contentType: string) {
+  const safeName = path.basename(fileName).replace(/[^a-zA-Z0-9._-]/g, '_');
+  const storagePath = `${userId}/${Date.now()}-${safeName}`;
+  const { url, anonKey } = config();
+  const response = await fetch(`${url}/storage/v1/object/verification-documents/${storagePath}`, {
+    method: 'POST',
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': contentType,
+      'x-upsert': 'false',
+    },
+    body: new Uint8Array(file),
+  });
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Supabase Storage upload failed (${response.status}): ${detail.slice(0, 250)}`);
+  }
+  return storagePath;
+}
+
+export function maxDocumentBytes() {
+  return Number(process.env.MAX_VERIFICATION_UPLOAD_BYTES || 5 * 1024 * 1024);
+}
+
+export function getRole(user: AuthenticatedUser) {
+  return appRole(user.appMetadata);
+}
+
+export function loadEnvironmentFile() {
+  // dotenv is loaded by the application entrypoint; this exists for type-safe config references only.
+  return readFileSync;
 }
