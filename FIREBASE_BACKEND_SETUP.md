@@ -1,5 +1,5 @@
 # Supabase backend setup
 
-The previous Firebase setup guide has been retired. This repository now uses Supabase Auth, Postgres, and Storage. Follow [SUPABASE_BACKEND_SETUP.md](SUPABASE_BACKEND_SETUP.md) for current configuration, environment variables, schema, API routes, and local run instructions.
+This file is retained as a pointer for anyone following an older Firebase setup link. Firebase Authentication, Firestore, Firebase API keys, and service-account credentials are not used by this branch.
 
-Do not use Firebase credentials or configure a Firebase project for this branch. See [README.md](README.md) for the application status and production safety notes.
+Use [SUPABASE_BACKEND_SETUP.md](SUPABASE_BACKEND_SETUP.md) for current Supabase Auth, Postgres, Storage, environment, and local development instructions.
