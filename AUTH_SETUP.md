@@ -1,21 +1,5 @@
-# Demo mode
+# Cloud authentication setup
 
-This version starts directly in the client-side demo; Firebase sign-in is not required. Demo forms do not create real accounts, sync data between devices, securely persist records, accept payments, or protect real uploaded documents.
+This repository includes a Supabase Auth sign-in screen. Configure a Supabase project and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, and the server-only `SUPABASE_SERVICE_ROLE_KEY` before using live authentication or API routes.
 
-Do not enter real personal, identity, resume, or payment information.
-
-## Startup behavior
-
-- The app loads the original demo UI immediately.
-- No Firebase configuration is required for local startup.
-- No live authentication, database, or storage layer is used in this demo mode.
-
-## Authentication
-
-Firebase authentication was removed from this demo. This repository currently runs as a client-side demo without account sign-in.
-
-Do not use real credentials or personal data in demo forms.
-
-## Production note
-
-This is not a production-ready login, authorization, or data persistence flow. It is only for local UI preview and demo use.
+The UI is still a demo in several areas. Demo role switching and local-only application, job, payment, and residency interactions are not secured by the cloud API. Do not submit real identity, resume, or payment information until the full UI migration and a security/privacy review are complete.
