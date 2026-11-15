@@ -1,5 +1,5 @@
-# Cloud authentication setup
+# Supabase Auth setup
 
-This repository includes a Supabase Auth sign-in screen. Configure a Supabase project and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, and the server-only `SUPABASE_SERVICE_ROLE_KEY` before using live authentication or API routes.
+This version uses Supabase Auth for email/password and Facebook sign-in. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for the browser, and configure the server-side Supabase environment variables before using live authentication or API routes.
 
-The UI is still a demo in several areas. Demo role switching and local-only application, job, payment, and residency interactions are not secured by the cloud API. Do not submit real identity, resume, or payment information until the full UI migration and a security/privacy review are complete.
+Demo role switching and local-only application, job, payment, and residency interactions are not all connected to the cloud API. Do not enter real personal, identity, resume, or payment information until the full UI migration and security/privacy review are complete.

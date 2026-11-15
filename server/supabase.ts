@@ -1,4 +1,4 @@
-import { createClient } from './supabase';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export type AuthenticatedUser = {
   uid: string;
@@ -8,96 +8,81 @@ export type AuthenticatedUser = {
 };
 export type SupabaseRow = Record<string, unknown>;
 
-function requireServiceConfig() {
+function config() {
   const url = process.env.SUPABASE_URL?.replace(/\/$/, '');
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceRoleKey) {
-    throw new Error('Supabase server is not configured: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.');
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  if (!url || !serviceRoleKey || !anonKey) {
+    throw new Error('Supabase server config requires SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY.');
   }
-  return { url, serviceRoleKey };
+  return { url, serviceRoleKey, anonKey };
 }
 
-async function restRequest(path: string, init: RequestInit = {}) {
-  const { url, serviceRoleKey } = requireServiceConfig();
-  const response = await fetch(`${url}/rest/v1/${path}`, {
-    ...init,
-    headers: {
-      apikey: serviceRoleKey,
-      Authorization: `Bearer ${serviceRoleKey}`,
-      'Content-Type': 'application/json',
-      ...init.headers,
-    },
+function userClient(accessToken: string): SupabaseClient {
+  const { url, anonKey } = config();
+  return createClient(url, anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
   });
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Supabase request failed (${response.status}): ${detail.slice(0, 300)}`);
-  }
-  if (response.status === 204) return null;
-  return response.json() as Promise<any>;
 }
 
 export async function verifySupabaseAccessToken(accessToken: string): Promise<AuthenticatedUser> {
-  const { url, serviceRoleKey } = requireServiceConfig();
-  const response = await fetch(`${url}/auth/v1/user`, {
-    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${accessToken}` },
-  });
-  if (!response.ok) throw new Error('Invalid or expired sign-in session. Please sign in again.');
-  const user = await response.json() as {
-    id?: string;
-    email?: string;
-    user_metadata?: { full_name?: string; name?: string };
-    app_metadata?: Record<string, unknown>;
-  };
-  if (!user.id) throw new Error('Invalid sign-in session. Please sign in again.');
+  const { url, serviceRoleKey } = config();
+  const admin = createClient(url, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data, error } = await admin.auth.getUser(accessToken);
+  if (error || !data.user) throw new Error('Invalid or expired sign-in session. Please sign in again.');
   return {
-    uid: user.id,
-    email: user.email || '',
-    displayName: user.user_metadata?.full_name || user.user_metadata?.name || '',
-    appMetadata: user.app_metadata || {},
+    uid: data.user.id,
+    email: data.user.email || '',
+    displayName: String(data.user.user_metadata?.full_name || data.user.user_metadata?.name || ''),
+    appMetadata: data.user.app_metadata || {},
   };
 }
 
-export async function getProfile(id: string): Promise<SupabaseRow | null> {
-  const rows = await restRequest(`profiles?select=*&id=eq.${encodeURIComponent(id)}&limit=1`);
-  return rows?.[0] || null;
+function throwIfError(error: { message: string } | null) {
+  if (error) throw new Error(`Supabase request failed: ${error.message}`);
 }
 
-export async function upsertProfile(row: SupabaseRow): Promise<SupabaseRow | null> {
-  const rows = await restRequest('profiles?on_conflict=id', {
-    method: 'POST',
-    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-    body: JSON.stringify(row),
-  });
-  return rows?.[0] || null;
+export async function getProfile(accessToken: string, id: string): Promise<SupabaseRow | null> {
+  const { data, error } = await userClient(accessToken).from('profiles').select('*').eq('id', id).maybeSingle();
+  throwIfError(error);
+  return data as SupabaseRow | null;
 }
 
-export async function getJob(id: string): Promise<SupabaseRow | null> {
-  const rows = await restRequest(`jobs?select=*&id=eq.${encodeURIComponent(id)}&limit=1`);
-  return rows?.[0] || null;
+export async function upsertProfile(accessToken: string, row: SupabaseRow): Promise<SupabaseRow | null> {
+  const { data, error } = await userClient(accessToken).from('profiles').upsert(row, { onConflict: 'id' }).select().single();
+  throwIfError(error);
+  return data as SupabaseRow;
 }
 
-export async function listPublishedJobs(): Promise<SupabaseRow[]> {
-  return await restRequest('jobs?select=*&status=eq.published&order=created_at.desc&limit=100') || [];
+export async function getJob(accessToken: string, id: string): Promise<SupabaseRow | null> {
+  const { data, error } = await userClient(accessToken).from('jobs').select('*').eq('id', id).maybeSingle();
+  throwIfError(error);
+  return data as SupabaseRow | null;
 }
 
-export async function listApplications(userId: string): Promise<SupabaseRow[]> {
-  return await restRequest(`applications?select=*&user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&limit=100`) || [];
+export async function listPublishedJobs(accessToken: string): Promise<SupabaseRow[]> {
+  const { data, error } = await userClient(accessToken).from('jobs').select('*')
+    .eq('status', 'published').order('created_at', { ascending: false }).limit(100);
+  throwIfError(error);
+  return (data || []) as SupabaseRow[];
 }
 
-export async function createApplication(row: SupabaseRow): Promise<SupabaseRow | null> {
-  const rows = await restRequest('applications', {
-    method: 'POST',
-    headers: { Prefer: 'return=representation' },
-    body: JSON.stringify(row),
-  });
-  return rows?.[0] || null;
+export async function listApplications(accessToken: string, userId: string): Promise<SupabaseRow[]> {
+  const { data, error } = await userClient(accessToken).from('applications').select('*')
+    .eq('user_id', userId).order('created_at', { ascending: false }).limit(100);
+  throwIfError(error);
+  return (data || []) as SupabaseRow[];
 }
 
-export async function createJob(row: SupabaseRow): Promise<SupabaseRow | null> {
-  const rows = await restRequest('jobs', {
-    method: 'POST',
-    headers: { Prefer: 'return=representation' },
-    body: JSON.stringify(row),
-  });
-  return rows?.[0] || null;
+export async function createApplication(accessToken: string, row: SupabaseRow): Promise<SupabaseRow | null> {
+  const { data, error } = await userClient(accessToken).from('applications').insert(row).select().single();
+  throwIfError(error);
+  return data as SupabaseRow;
+}
+
+export async function createJob(accessToken: string, row: SupabaseRow): Promise<SupabaseRow | null> {
+  const { data, error } = await userClient(accessToken).from('jobs').insert(row).select().single();
+  throwIfError(error);
+  return data as SupabaseRow;
 }

@@ -1,1 +1,1 @@
-// Firestore rules have been removed. Supabase table and Storage RLS policies are in supabase/schema.sql.
+// Firestore rules were replaced by Supabase Postgres and Storage RLS policies in supabase/schema.sql.

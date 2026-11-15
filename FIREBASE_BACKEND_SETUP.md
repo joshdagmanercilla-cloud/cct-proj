@@ -1,3 +1,3 @@
-# Supabase Auth + Postgres + Storage setup
+-- Supabase Auth + Postgres + Storage setup
 
-This branch uses Supabase Authentication, Postgres, and Storage. Configure the Supabase project and credentials described in `SUPABASE_BACKEND_SETUP.md` before enabling live cloud flows. Supabase Storage is configured as a private bucket; document upload is not yet wired into the demo UI or API. Do not enter real personal data until the complete migration and security review are complete.
+This project uses Supabase Auth, Postgres, and private Supabase Storage. See `SUPABASE_BACKEND_SETUP.md` for current setup steps. The old Firebase backend integration has been removed; no Firebase configuration is used by this branch.
