@@ -27,11 +27,11 @@ export type CloudApplication = {
 export type CloudBootstrap = { jobs: CloudJob[]; applications: CloudApplication[]; profile: CloudProfile };
 
 async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const idToken = await getIdToken();
+  const accessToken = await getIdToken();
   const response = await fetch(path, {
     ...init,
     headers: {
-      Authorization: `Bearer ${idToken}`,
+      Authorization: `Bearer ${accessToken}`,
       ...(init.body ? { 'Content-Type': 'application/json' } : {}),
       ...init.headers,
     },

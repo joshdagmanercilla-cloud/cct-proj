@@ -3,7 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
-import { getDocument, listDocuments, putDocument, verifyFirebaseIdToken } from './server/firebase';
+import {
+  createApplication, createJob, getJob, getProfile, listApplications, listPublishedJobs,
+  SupabaseRow, upsertProfile, verifySupabaseAccessToken,
+} from './server/supabase';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +24,6 @@ app.use((_req, res, next) => {
 });
 app.use(express.json({ limit: '1mb' }));
 
-// Best-effort per-process API throttle. Use a managed gateway/WAF for distributed production limits.
 const rateCounts = new Map<string, { count: number; resetAt: number }>();
 app.use('/api', (req, res, next) => {
   const now = Date.now();
@@ -35,7 +37,7 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
- type ApiRequest = Request & { user?: Awaited<ReturnType<typeof verifyFirebaseIdToken>> };
+type ApiRequest = Request & { user?: Awaited<ReturnType<typeof verifySupabaseAccessToken>>; accessToken?: string };
 async function requireUser(req: ApiRequest, res: Response, next: NextFunction) {
   const authorization = req.header('authorization') || '';
   const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
@@ -44,7 +46,8 @@ async function requireUser(req: ApiRequest, res: Response, next: NextFunction) {
     return;
   }
   try {
-    req.user = await verifyFirebaseIdToken(token);
+    req.user = await verifySupabaseAccessToken(token);
+    req.accessToken = token;
     next();
   } catch (error) {
     res.status(401).json({ error: error instanceof Error ? error.message : 'Invalid sign-in session.' });
@@ -55,17 +58,38 @@ function cleanString(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
 }
 
+function apiProfile(row: SupabaseRow) {
+  return { id: row.id, email: row.email, name: row.name, role: row.role };
+}
+function apiJob(row: SupabaseRow) {
+  return {
+    id: row.id, title: row.title, company: row.company, location: row.location, description: row.description,
+    category: row.category, salary: row.salary, arrangement: row.arrangement, status: row.status,
+  };
+}
+function apiApplication(row: SupabaseRow) {
+  return {
+    id: row.id, jobId: row.job_id, jobTitle: row.job_title, company: row.company,
+    applicantName: row.applicant_name, applicantEmail: row.applicant_email,
+    applicantPhone: row.applicant_phone, coverNote: row.cover_note, status: row.status,
+    createdAt: row.created_at,
+  };
+}
+
 app.get('/health', (_req, res) => res.json({ ok: true, status: 'healthy' }));
 
 app.get('/api/bootstrap', requireUser, async (req: ApiRequest, res) => {
   try {
     const user = req.user!;
+    const token = req.accessToken!;
     const [jobs, applications, profile] = await Promise.all([
-      listDocuments('jobs'),
-      listDocuments(`users/${encodeURIComponent(user.uid)}/applications`),
-      getDocument('users', user.uid),
+      listPublishedJobs(token), listApplications(token, user.uid), getProfile(token, user.uid),
     ]);
-    res.json({ jobs, applications, profile: profile || { id: user.uid, email: user.email, name: user.displayName, role: 'jobseeker' } });
+    res.json({
+      jobs: jobs.map(apiJob),
+      applications: applications.map(apiApplication),
+      profile: profile ? apiProfile(profile) : { id: user.uid, email: user.email, name: user.displayName, role: 'jobseeker' },
+    });
   } catch (error) {
     console.error('bootstrap_failed', error);
     res.status(503).json({ error: 'Could not load cloud data. Please try again.' });
@@ -76,14 +100,10 @@ app.put('/api/profile', requireUser, async (req: ApiRequest, res) => {
   const user = req.user!;
   const name = cleanString(req.body?.name, 100) || user.displayName || user.email.split('@')[0];
   try {
-    const previous = await getDocument('users', user.uid);
-    // Never accept role, verification, or ownership flags from the browser.
-    const profile = await putDocument('users', user.uid, {
-      ...(previous || {}), id: user.uid, email: user.email, name,
-      role: typeof user.customAttributes.role === 'string' ? user.customAttributes.role : 'jobseeker',
-      updatedAt: new Date().toISOString(),
+    const profile = await upsertProfile(req.accessToken!, {
+      id: user.uid, email: user.email, name, updated_at: new Date().toISOString(),
     });
-    res.json({ profile });
+    res.json({ profile: profile ? apiProfile(profile) : null });
   } catch (error) {
     console.error('profile_save_failed', error);
     res.status(503).json({ error: 'Could not save your profile.' });
@@ -92,9 +112,10 @@ app.put('/api/profile', requireUser, async (req: ApiRequest, res) => {
 
 app.post('/api/applications', requireUser, async (req: ApiRequest, res) => {
   const user = req.user!;
-  const jobId = Number(req.body?.jobId);
-  const job = Number.isSafeInteger(jobId) ? await getDocument('jobs', String(jobId)) : null;
-  if (!job) {
+  const token = req.accessToken!;
+  const jobId = cleanString(String(req.body?.jobId ?? ''), 100);
+  const job = jobId ? await getJob(token, jobId) : null;
+  if (!job || job.status !== 'published') {
     res.status(400).json({ error: 'Choose a valid job listing.' });
     return;
   }
@@ -106,16 +127,15 @@ app.post('/api/applications', requireUser, async (req: ApiRequest, res) => {
     res.status(400).json({ error: 'Check your name, email, and Philippine mobile number.' });
     return;
   }
-  const id = `APP-${randomUUID()}`;
-  const application = {
-    id, jobId, jobTitle: cleanString(job.title, 160), company: cleanString(job.company, 160),
-    applicantId: user.uid, applicantName, applicantEmail, applicantPhone, coverNote,
-    status: 'Submitted', createdAt: new Date().toISOString(),
-    // Resume binaries are intentionally not accepted until private object storage and scanning are configured.
-  };
   try {
-    await putDocument(`users/${encodeURIComponent(user.uid)}/applications`, id, application);
-    res.status(201).json({ application });
+    const row: SupabaseRow = {
+      id: `APP-${randomUUID()}`, user_id: user.uid, job_id: jobId,
+      job_title: cleanString(job.title, 160), company: cleanString(job.company, 160),
+      applicant_name: applicantName, applicant_email: applicantEmail, applicant_phone: applicantPhone,
+      cover_note: coverNote, status: 'Submitted',
+    };
+    const application = await createApplication(token, row);
+    res.status(201).json({ application: application ? apiApplication(application) : null });
   } catch (error) {
     console.error('application_create_failed', error);
     res.status(503).json({ error: 'Could not submit your application. Please try again.' });
@@ -124,7 +144,7 @@ app.post('/api/applications', requireUser, async (req: ApiRequest, res) => {
 
 app.post('/api/jobs', requireUser, async (req: ApiRequest, res) => {
   const user = req.user!;
-  if (user.customAttributes.role !== 'employer') {
+  if (user.appMetadata.role !== 'employer') {
     res.status(403).json({ error: 'Employer access must be approved by an administrator.' });
     return;
   }
@@ -136,17 +156,15 @@ app.post('/api/jobs', requireUser, async (req: ApiRequest, res) => {
     res.status(400).json({ error: 'Job title, company, location, and description are required.' });
     return;
   }
-  const id = randomUUID();
-  const job = {
-    id, ownerId: user.uid, title, company, location, description,
-    category: cleanString(req.body?.category, 100),
-    salary: cleanString(req.body?.salary, 100),
-    arrangement: ['On-site', 'Hybrid', 'Remote'].includes(req.body?.arrangement) ? req.body.arrangement : 'On-site',
-    status: 'pending_review', createdAt: new Date().toISOString(),
-  };
   try {
-    await putDocument('jobs', id, job);
-    res.status(201).json({ job });
+    const row: SupabaseRow = {
+      owner_id: user.uid, title, company, location, description,
+      category: cleanString(req.body?.category, 100), salary: cleanString(req.body?.salary, 100),
+      arrangement: ['On-site', 'Hybrid', 'Remote'].includes(req.body?.arrangement) ? req.body.arrangement : 'On-site',
+      status: 'pending_review',
+    };
+    const job = await createJob(req.accessToken!, row);
+    res.status(201).json({ job: job ? apiJob(job) : null });
   } catch (error) {
     console.error('job_create_failed', error);
     res.status(503).json({ error: 'Could not save this job listing.' });
