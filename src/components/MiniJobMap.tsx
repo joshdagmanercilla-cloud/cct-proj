@@ -54,6 +54,8 @@ interface MiniJobMapProps {
   distanceKm: number;
   minutes: number;
   commuteMode: string;
+  originCoords?: [number, number];
+  destinationCoords?: [number, number];
   onHomeLocationChange?: (newLoc: string) => void;
 }
 
@@ -63,6 +65,8 @@ export const MiniJobMap: React.FC<MiniJobMapProps> = ({
   distanceKm,
   minutes,
   commuteMode,
+  originCoords,
+  destinationCoords,
   onHomeLocationChange,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -70,8 +74,8 @@ export const MiniJobMap: React.FC<MiniJobMapProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const isRemote = job.arrangement === 'Remote' || job.location.toLowerCase().includes('remote');
-  const homeCoords = getCoordinatesForHome(userHomeLocation);
-  const jobCoords = getCoordinatesForJob(job);
+  const homeCoords = originCoords || getCoordinatesForHome(userHomeLocation);
+  const jobCoords = destinationCoords || getCoordinatesForJob(job);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;

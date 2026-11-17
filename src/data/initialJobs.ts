@@ -1,4 +1,4 @@
-import { Job } from '../types';
+import type { Job } from '../types/index.ts';
 
 export const INITIAL_JOBS: Job[] = [
   {
@@ -15,17 +15,27 @@ export const INITIAL_JOBS: Job[] = [
     estimatedCommuteMinutes: 10,
     commuteMode: 'Tricycle / Jeepney',
     estimatedFarePhp: 25,
-    commuteTip: 'Just one tricycle ride from Marabulig 1 or a jeepney heading to Centro.',
+    commuteTip: 'Just one tricycle ride from Marabulig 1 or a northbound jeepney heading toward Tagaran.',
     proximityLevel: 'very_near',
     arrangement: 'On-site',
     type: 'Trainee',
     level: 'internship',
     salary: '₱14,500 - ₱17,000 / month',
+    salaryMin: 14500,
+    salaryMax: 17000,
     posted: '1 day ago',
-    description: 'Assist the agronomy and field operations team with crop cycle tracking, warehouse inventory of agricultural supplies, and coordination with local farming cooperatives in Isabela.',
-    qualifications: 'Fresh graduates of BS Agriculture, Agribusiness, Agricultural Engineering, or related courses. Willing to conduct field visits in Cauayan City & Luna barangays.',
+    description:
+      'Assist the agronomy and field operations team with crop cycle tracking, warehouse inventory of agricultural supplies, and coordination with local farming cooperatives in Isabela.',
+    qualifications:
+      'Fresh graduates of BS Agriculture, Agribusiness, Agricultural Engineering, or related courses. Willing to conduct field visits in Cauayan City & Luna barangays.',
     contactEmail: 'careers@cauayan-agrotech.ph',
     isVerifiedEmployer: true,
+    status: 'active',
+    employerId: 'user-emp-agro',
+    screeningQuestions: [
+      'Are you comfortable conducting morning field visits within Cauayan City barangays?',
+      'Briefly share your agricultural coursework, OJT, or cooperative experience.',
+    ],
   },
   {
     id: 2,
@@ -41,18 +51,28 @@ export const INITIAL_JOBS: Job[] = [
     estimatedCommuteMinutes: 7,
     commuteMode: 'Tricycle / Regular Jeepney',
     estimatedFarePhp: 20,
-    commuteTip: 'Very close to Marabulig 1; only 5 to 7 minutes via tricycle or regular jeepney.',
+    commuteTip: 'Very close to Marabulig 1; only 5 to 7 minutes via tricycle or regular jeepney along Maharlika Highway.',
     proximityLevel: 'very_near',
     arrangement: 'Hybrid',
     type: 'Entry Level',
     level: 'entry_level',
     salary: '₱18,000 - ₱22,000 / month',
+    salaryMin: 18000,
+    salaryMax: 22000,
     posted: '2 days ago',
-    description: 'Provide level-1 technical support for business workstations, LAN/WiFi configuration, peripheral installation, and basic cloud account administration for local enterprises.',
-    qualifications: 'BS Information Technology, Computer Science, or Computer Engineering graduate. Strong troubleshooting logic and customer-oriented service mindset.',
+    description:
+      'Provide level-1 technical support for business workstations, LAN/WiFi configuration, peripheral installation, and basic cloud account administration for local enterprises.',
+    qualifications:
+      'BS Information Technology, Computer Science, or Computer Engineering graduate. Strong troubleshooting logic and customer-oriented service mindset.',
     contactEmail: 'hr@isabelatechsolutions.com',
     isVerifiedEmployer: true,
     isFeatured: true,
+    status: 'active',
+    employerId: 'user-emp',
+    screeningQuestions: [
+      'Can you commute to Brgy. San Fermin (near SM City Cauayan) for onsite days?',
+      'List any hardware, networking, or helpdesk ticketing tools you have used.',
+    ],
   },
   {
     id: 3,
@@ -74,11 +94,21 @@ export const INITIAL_JOBS: Job[] = [
     type: 'No Experience Required',
     level: 'no_experience',
     salary: '₱13,500 - ₱15,500 + Service Charge',
+    salaryMin: 13500,
+    salaryMax: 15500,
     posted: '3 days ago',
-    description: 'Welcomes corporate and leisure guests, handles reservations and room check-ins/check-outs, manages billing inquiries, and delivers warm hospitality typical of Cagayan Valley.',
-    qualifications: 'BS Hospitality Management, Tourism, or any 4-year degree. Good English communication skills; conversational Ilocano or Tagalog is an advantage.',
+    description:
+      'Welcomes corporate and leisure guests, handles reservations and room check-ins/check-outs, manages billing inquiries, and delivers warm hospitality typical of Cagayan Valley.',
+    qualifications:
+      'BS Hospitality Management, Tourism, or any 4-year degree. Good English communication skills; conversational Ilocano or Tagalog is an advantage.',
     contactEmail: 'talent@riversidecauayan.com',
     isVerifiedEmployer: true,
+    status: 'active',
+    employerId: 'user-emp-hotel',
+    screeningQuestions: [
+      'Are you available for shifting schedules including weekends and holidays?',
+      'Which languages or dialects can you speak comfortably with guests?',
+    ],
   },
   {
     id: 4,
@@ -94,17 +124,27 @@ export const INITIAL_JOBS: Job[] = [
     estimatedCommuteMinutes: 30,
     commuteMode: 'Jeepney / Van from Cauayan Terminal',
     estimatedFarePhp: 55,
-    commuteTip: 'Moderate distance from Cauayan Centro; take an Alicia or Angadanan jeepney from Cauayan Central Terminal (~30 mins travel).',
+    commuteTip: 'Moderate distance from Cauayan Centro; take an Alicia or Santiago jeepney from Cauayan Central Terminal (~30 mins travel).',
     proximityLevel: 'moderate',
     arrangement: 'On-site',
     type: 'Trainee',
     level: 'internship',
     salary: '₱14,000 - ₱16,000 / month',
+    salaryMin: 14000,
+    salaryMax: 16000,
     posted: '4 days ago',
-    description: 'Hands-on training in automated packaging machinery, quality control testing against Philippine Bureau of Product Standards, and safety compliance recording.',
-    qualifications: 'Industrial Technology, Mechanical Tech, BS Industrial Engineering, or fresh vocational / TESDA NC II/NC III holders.',
+    description:
+      'Hands-on training in automated packaging machinery, quality control testing against Philippine Bureau of Product Standards, and safety compliance recording.',
+    qualifications:
+      'Industrial Technology, Mechanical Tech, BS Industrial Engineering, or fresh vocational / TESDA NC II/NC III holders.',
     contactEmail: 'careers@luzonpkg.ph',
     isVerifiedEmployer: true,
+    status: 'active',
+    employerId: 'user-emp-mfg',
+    screeningQuestions: [
+      'Do you hold any TESDA NC II / NC III certifications or mechanical training?',
+      'Confirm you can travel to Industrial Zone, Alicia, Isabela for 8 AM shifts.',
+    ],
   },
   {
     id: 5,
@@ -126,11 +166,21 @@ export const INITIAL_JOBS: Job[] = [
     type: 'Entry Level',
     level: 'entry_level',
     salary: '₱15,000 - ₱18,000 / month',
+    salaryMin: 15000,
+    salaryMax: 18000,
     posted: 'Just now',
-    description: 'Maintain electronic records, handle correspondence with Cauayan City Hall and business partners, generate billing reports, and coordinate internal office appointments.',
-    qualifications: 'BS Business Administration, Office Administration, Public Administration, or related degree. Proficient in MS Excel / Google Sheets and document drafting.',
+    description:
+      'Maintain electronic records, handle correspondence with Cauayan City Hall and business partners, generate billing reports, and coordinate internal office appointments.',
+    qualifications:
+      'BS Business Administration, Office Administration, Public Administration, or related degree. Proficient in MS Excel / Google Sheets and document drafting.',
     contactEmail: 'admin@marabuligsupport.com',
     isVerifiedEmployer: true,
+    status: 'active',
+    employerId: 'user-emp',
+    screeningQuestions: [
+      'Rate your proficiency in Excel / Google Sheets and document filing.',
+      'Are you eligible under the First-Time Jobseekers Act (RA 11261)?',
+    ],
   },
   {
     id: 6,
@@ -152,11 +202,22 @@ export const INITIAL_JOBS: Job[] = [
     type: 'No Experience Required',
     level: 'no_experience',
     salary: '₱19,000 - ₱24,000 / month + Night Diff',
+    salaryMin: 19000,
+    salaryMax: 24000,
     posted: '5 days ago',
-    description: 'Handle customer inquiries for telecommunication and e-commerce clients. Paid 4-week training provided with full healthcare and allowances upon day one.',
-    qualifications: 'College graduate or at least 2 years in college completed. Fresh graduates with confident conversational English skills are heavily encouraged to apply.',
+    description:
+      'Handle customer inquiries for telecommunication and e-commerce clients. Paid 4-week training provided with full healthcare and allowances upon day one.',
+    qualifications:
+      'College graduate or at least 2 years in college completed. Fresh graduates with confident conversational English skills are heavily encouraged to apply.',
     contactEmail: 'recruitment@northvalleybpo.ph',
     isVerifiedEmployer: true,
+    isFeatured: true,
+    status: 'active',
+    employerId: 'user-emp-bpo',
+    screeningQuestions: [
+      'Are you open to graveyard/night shifts with complimentary shuttle pickup at SM Cauayan?',
+      'Share a brief example of how you handle stressful customer conversations.',
+    ],
   },
   {
     id: 7,
@@ -178,10 +239,56 @@ export const INITIAL_JOBS: Job[] = [
     type: 'Entry Level',
     level: 'entry_level',
     salary: '₱16,000 - ₱19,500 / month',
+    salaryMin: 16000,
+    salaryMax: 19500,
     posted: '3 days ago',
-    description: 'Create engaging social media content, assist in organizing local job caravans and product expos across Isabela, and monitor digital campaign engagement metrics.',
-    qualifications: 'BS Marketing, Communications, Advertising, or Multimedia Arts. Familiar with Canva, basic video editing, and social media analytics.',
+    description:
+      'Create engaging social media content, assist in organizing local job caravans and product expos across Isabela, and monitor digital campaign engagement metrics.',
+    qualifications:
+      'BS Marketing, Communications, Advertising, or Multimedia Arts. Familiar with Canva, basic video editing, and social media analytics.',
     contactEmail: 'growth@isabelaagrimarket.ph',
     isVerifiedEmployer: true,
-  }
+    status: 'active',
+    employerId: 'user-emp-mkt',
+    screeningQuestions: [
+      'Share a link or brief description of a Canva/social post or campaign you created.',
+      'Can you report onsite to Naguilian Poblacion twice a week?',
+    ],
+  },
+  {
+    id: 8,
+    initial: 'VD',
+    logo: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    company: 'Cagayan Valley Remote Ops',
+    title: 'Junior Data Entry & E-Commerce Coordinator',
+    category: 'Administration',
+    location: 'Remote',
+    exactAddress: 'Work from Home (Cauayan City & Isabela Applicants)',
+    landmark: 'Monthly team meetup near SM City Cauayan',
+    distanceFromMarabulig1Km: 0,
+    estimatedCommuteMinutes: 0,
+    commuteMode: 'Work from Home (Remote)',
+    estimatedFarePhp: 0,
+    commuteTip: 'Zero daily commute required; stable fiber internet (15+ Mbps) recommended.',
+    proximityLevel: 'remote',
+    arrangement: 'Remote',
+    type: 'No Experience Required',
+    level: 'no_experience',
+    salary: '₱17,000 - ₱20,000 / month',
+    salaryMin: 17000,
+    salaryMax: 20000,
+    posted: '1 day ago',
+    description:
+      'Process online catalog updates, verify merchant orders, reconcile daily spreadsheet inventories, and respond to partner emails remotely from home.',
+    qualifications:
+      'Any college degree or senior high school graduate with strong attention to detail, laptop/PC access, and reliable home internet.',
+    contactEmail: 'jobs@cvremoteops.ph',
+    isVerifiedEmployer: true,
+    status: 'active',
+    employerId: 'user-emp',
+    screeningQuestions: [
+      'Do you have access to a personal computer/laptop and reliable internet connection?',
+      'What is your typing speed and familiarity with spreadsheet formulas?',
+    ],
+  },
 ];
